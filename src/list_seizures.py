@@ -13,7 +13,7 @@ def list_seizures(path):
     events = pd.read_csv(path, sep="\t")          # .tsv = columns separated by TAB
     # TODO 1: keep only the rows whose eventType starts with "sz"
     #         hint: events["eventType"].str.startswith("sz")
-    seizures = events
+    seizures = events[events["eventType"].str.startswith("sz")]
     return seizures
 
 
@@ -22,7 +22,7 @@ def describe(row):
     minutes = row["onset"] / 60
     # TODO 2: return a sentence like
     #         "at minute 940.9: sz_foc_f2b, 78 s, asleep"
-    return ""
+    return f'at minute {minutes:.1f}: {row["eventType"]}, {row["duration"]} s, {row["vigilance"]}'
 
 
 if __name__ == "__main__":
@@ -32,3 +32,5 @@ if __name__ == "__main__":
     for _, row in seizures.iterrows():
         print(describe(row))
         # TODO 3: if the seizure lasted longer than 300 s, also print "EMERGENCY: over 5 minutes"
+        if row["duration"] > 300:
+            print("EMERGENCY: over 5 minutes")
