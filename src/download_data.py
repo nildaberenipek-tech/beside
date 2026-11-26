@@ -42,7 +42,15 @@ def fetch(key, out_dir):
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, os.path.basename(key))
     if not os.path.exists(path):
-        urllib.request.urlretrieve(f"{BASE}/{key}", path)
+        # download to a temporary name first, so an interrupted download is never mistaken for a full file
+        for attempt in range(4):
+            try:
+                urllib.request.urlretrieve(f"{BASE}/{key}", path + ".part")
+                os.replace(path + ".part", path)
+                break
+            except Exception:
+                if attempt == 3:
+                    raise
     return path
 
 
