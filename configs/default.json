@@ -5,6 +5,21 @@
   "test_fraction": 0.25,
   "window_s": 10,
   "step_s": 5,
-  "motion_band_hz": [2, 8],
-  "status_epilepticus_s": 300
+  "motion_band_hz": [
+    2,
+    8
+  ],
+  "status_epilepticus_s": 300,
+  "eval": {
+    "persist_windows": 2,
+    "refractory_s": 120,
+    "tol_before_s": 30,
+    "tol_after_s": 60,
+    "target_fa_per_24h": [
+      0.5,
+      1,
+      2,
+      4
+    ]
+  }
 }
