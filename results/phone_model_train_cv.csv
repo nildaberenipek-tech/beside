@@ -1,0 +1,4 @@
+operating_point,threshold,sensitivity_pct,fa_per_24h,median_latency_s,n_seizures,n_false_alarms,hours,sens_f2b_pct,n_f2b,median_latency_f2b_s,sens_asleep_pct,sens_awake_pct
+fa_1_per_day,0.9632,7.2214,0.9972,50.0000,637,342,8230.8069,80.4878,41,55.0000,8.4142,5.8632
+fa_2_per_day,0.9480,8.0063,1.9974,50.0000,637,685,8230.8069,85.3659,41,50.0000,9.0615,6.8404
+fa_4_per_day,0.9299,10.2041,3.9977,49.0000,637,1371,8230.8069,87.8049,41,49.0000,10.0324,10.4235

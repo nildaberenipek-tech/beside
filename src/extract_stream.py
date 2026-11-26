@@ -21,6 +21,7 @@ import stream_features as SF
 
 warnings.filterwarnings("ignore")
 OUT = "data/features_stream"
+MOV_KEYS = {k for k, _ in list_keys() if k.endswith("_mov.edf")}
 
 
 def process_run(sub, run):
@@ -28,8 +29,11 @@ def process_run(sub, run):
     if os.path.exists(out_path):
         return out_path
     stem = f"sub-{sub}_ses-01_task-szMonitoring_run-{run}"
+    key = f"{PREFIX}sub-{sub}/ses-01/mov/{stem}_mov.edf"
+    if key not in MOV_KEYS:
+        return "no motion file"          # some SeizeIT2 runs have no motion recording
     raw_dir = f"data/raw/stream_{sub}_{run}"
-    path = fetch(f"{PREFIX}sub-{sub}/ses-01/mov/{stem}_mov.edf", raw_dir)
+    path = fetch(key, raw_dir)
     labs = {p: [f"{p} ACC {a}" for a in "XYZ"] for p in ["ECGEMG SD", "EEG SD"]}
     ch = read_channels(path, labs["ECGEMG SD"] + labs["EEG SD"])
     os.remove(path)
@@ -65,15 +69,18 @@ def main():
         return
     todo = runs_of(set(json.load(open("configs/split.json"))[a.split]))
     print(len(todo), "runs", flush=True)
+    skipped = 0
     with cf.ProcessPoolExecutor(a.workers) as ex:
         futs = {ex.submit(process_run, s, r): (s, r) for s, r in todo}
         for k, fu in enumerate(cf.as_completed(futs), 1):
             try:
-                fu.result()
+                if fu.result() == "no motion file":
+                    skipped += 1
             except Exception as e:
                 print("FAILED", futs[fu], repr(e)[:200], flush=True)
             if k % 50 == 0:
                 print(f"{k}/{len(todo)}", flush=True)
+    print(f"done; {skipped} runs skipped because SeizeIT2 has no motion file for them")
 
 
 if __name__ == "__main__":

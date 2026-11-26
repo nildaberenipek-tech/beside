@@ -54,7 +54,9 @@
       v += (seg[i] - m) ** 2; bp += band[i] ** 2; lp += low[i] ** 2;
       if (i) ll += Math.abs(seg[i] - seg[i - 1]);
     }
-    const f = { std: Math.sqrt(v / W), band_pow: bp / W, low_pow: lp / W, line_len: ll / (W - 1) };
+    let sd = Math.sqrt(v / W);
+    if (sd < 1e-9) sd = 0;                       // below sensor resolution: exactly 0 (same as Python)
+    const f = { std: sd, band_pow: bp / W, low_pow: lp / W, line_len: ll / (W - 1) };
 
     // spectrum of the de-meaned, Hann-windowed magnitude (same as numpy rfft)
     const nb = (W >> 1) + 1, val = 1 / (W * (1 / cfg.fs));
@@ -77,7 +79,7 @@
         if (spec[k] > best) { best = spec[k]; bestK = k; }
       }
     }
-    if (tot > 0) {
+    if (sd > 0 && tot > 0) {                     // a flat window has no rhythm (same as Python)
       const f0 = freqs[bestK];
       let near = 0;
       for (let k = 0; k < nb; k++) if (freqs[k] >= 1 && freqs[k] <= 12 && Math.abs(freqs[k] - f0) <= 0.5) near += spec[k];

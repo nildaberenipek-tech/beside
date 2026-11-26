@@ -23,6 +23,7 @@ HANN = np.hanning(WIN)
 FREQS = np.fft.rfftfreq(WIN, 1 / FS)
 IN_BAND = (FREQS >= 1) & (FREQS <= 12)
 EPS = 1e-12
+NOISE_FLOOR = 1e-9            # a standard deviation below this is treated as exactly zero
 BASE = ["std", "band_pow", "low_pow", "line_len", "peak_ratio", "dom_freq", "tilt"]
 FEATURES = ["rel_band", "rel_std", "rel_low", "rel_line", "rel_band_30s", "peak_ratio", "dom_freq",
             "tilt_change"]
@@ -41,11 +42,13 @@ def window_base(buf_xyz):
     band = sosfilt_zero(SOS_BAND, mag)[-WIN:]
     low = sosfilt_zero(SOS_LOW, mag)[-WIN:]
     seg = mag[-WIN:]
-    f = {"std": seg.std(), "band_pow": np.mean(band ** 2), "low_pow": np.mean(low ** 2),
+    sd = seg.std()
+    sd = 0.0 if sd < NOISE_FLOOR else sd      # below sensor resolution: exactly 0 (avoids round-off differences)
+    f = {"std": sd, "band_pow": np.mean(band ** 2), "low_pow": np.mean(low ** 2),
          "line_len": np.mean(np.abs(np.diff(seg)))}
     spec = np.abs(np.fft.rfft((seg - seg.mean()) * HANN)) ** 2
     sb = spec[IN_BAND]
-    if sb.sum() > 0:
+    if sd > 0 and sb.sum() > 0:               # a flat window has no rhythm
         k = int(np.argmax(sb))
         f0 = FREQS[IN_BAND][k]
         near = IN_BAND & (np.abs(FREQS - f0) <= 0.5)

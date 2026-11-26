@@ -50,7 +50,9 @@ def export_trees(m):
     for (pred,) in m._predictors:
         nodes = []
         for nd in pred.nodes:
-            nodes.append([int(nd["feature_idx"]), float(nd["num_threshold"]), int(nd["missing_go_to_left"]),
+            thr = float(nd["num_threshold"])
+            thr = thr if np.isfinite(thr) else 1e300      # JSON has no Infinity; 1e300 splits the same way
+            nodes.append([int(nd["feature_idx"]), thr, int(nd["missing_go_to_left"]),
                           int(nd["left"]), int(nd["right"]), int(nd["is_leaf"]), float(nd["value"])])
         trees.append(nodes)
     return {"baseline": float(np.ravel(m._baseline_prediction)[0]), "trees": trees}
@@ -105,7 +107,7 @@ def main():
              "thresholds": {**thresholds, "default": thresholds["fa_2_per_day"],
                             "high_attention": thresholds["fa_4_per_day"]},
              "eval": {k: CFG["eval"][k] for k in ["persist_windows", "refractory_s"]}}
-    json.dump(model, open("app/model.json", "w"), separators=(",", ":"))
+    json.dump(model, open("app/model.json", "w"), separators=(",", ":"), allow_nan=False)
     print("saved app/model.json", os.path.getsize("app/model.json") // 1024, "KB")
     # sanity: sklearn and our tree walk agree on a sample
     X = d[FEATURES].sample(2000, random_state=0).to_numpy()
