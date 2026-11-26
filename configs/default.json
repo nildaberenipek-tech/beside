@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "dataset": "SeizeIT2 (OpenNeuro ds005873 v1.1.0)",
+  "s3_base": "https://s3.amazonaws.com/openneuro.org/ds005873",
+  "test_fraction": 0.25,
+  "window_s": 10,
+  "step_s": 5,
+  "motion_band_hz": [2, 8],
+  "status_epilepticus_s": 300
+}

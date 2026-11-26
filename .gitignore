@@ -1,0 +1,6 @@
+# raw data is large and re-downloadable; never commit it
+data/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

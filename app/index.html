@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>seizure-guard</title>
+  <style>
+    /* Skeleton styles only - the UI teammate will redesign this. */
+    :root { --bg: #ffffff; --ink: #111827; --muted: #6b7280; --accent: #2563eb; --danger: #b91c1c; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #0b1020; --ink: #f3f4f6; --muted: #9ca3af; } }
+    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+    section { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
+    section.active { display: block; }
+    button { display: block; width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 12px;
+             border: 0; background: var(--accent); color: #fff; }
+    button.danger { background: var(--danger); }
+    label { display: block; margin: 12px 0 4px; color: var(--muted); }
+    input, select { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
+    .big { font-size: 64px; text-align: center; margin: 24px 0; }
+    .bar { height: 16px; background: #e5e7eb; border-radius: 8px; overflow: hidden; }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  </style>
+</head>
+<body>
+
+<!-- 1. Doctor profile -->
+<section id="profile-doctor">
+  <h1>Doctor: seizure profile</h1>
+  <label for="szType">Seizure type</label>
+  <select id="szType">
+    <option value="tonic-clonic">Tonic-clonic (incl. focal to bilateral)</option>
+    <option value="focal-motor">Focal motor</option>
+    <option value="focal-nonmotor">Focal non-motor</option>
+  </select>
+  <label for="typicalS">Typical duration (seconds)</label>
+  <input id="typicalS" type="number" value="90">
+  <button onclick="saveDoctor()">Save and continue</button>
+</section>
+
+<!-- 2. Patient profile -->
+<section id="profile-patient">
+  <h1>Your settings</h1>
+  <label for="codeWord">Code word for an aura</label>
+  <input id="codeWord" placeholder="e.g. lighthouse">
+  <label for="contactPhone">Emergency contact phone (demo number)</label>
+  <input id="contactPhone" type="tel" value="+10000000000">
+  <button onclick="savePatient()">Save</button>
+</section>
+
+<!-- 3. Home -->
+<section id="home">
+  <h1>seizure-guard</h1>
+  <p id="status">Not monitoring.</p>
+  <button onclick="startSleep()">Sleep mode</button>
+  <button onclick="show('aura')">I feel an aura</button>
+  <button onclick="show('log')">Seizure log</button>
+  <button onclick="show('replay')">Replay a real seizure</button>
+  <button onclick="show('profile-doctor')">Settings</button>
+</section>
+
+<!-- 4. Sleep mode -->
+<section id="sleep">
+  <h1>Monitoring your sleep</h1>
+  <p>Motion level</p>
+  <div class="bar"><div id="motionBar"></div></div>
+  <button onclick="startCountdown()">Demo mode: simulate a seizure</button>
+  <button onclick="show('home')">Stop</button>
+</section>
+
+<!-- 5. Aura mode -->
+<section id="aura">
+  <h1>High-attention mode ON</h1>
+  <p>Your contact was told: "aura reported". Detection is more sensitive for the next 10 minutes.</p>
+  <button onclick="show('home')">I'm fine now</button>
+</section>
+
+<!-- 6. Are you OK? countdown -->
+<section id="countdown">
+  <h1>Are you OK?</h1>
+  <div class="big" id="seconds">30</div>
+  <button onclick="cancelCountdown()">I'm OK</button>
+</section>
+
+<!-- 7. Alert sent -->
+<section id="alert">
+  <h1>Help is being called</h1>
+  <p id="alertText"></p>
+  <button class="danger" id="smsBtn">Open message to contact</button>
+  <button onclick="show('home')">Back</button>
+</section>
+
+<!-- 8. Log -->
+<section id="log">
+  <h1>Seizure log</h1>
+  <ul id="logList"></ul>
+  <button onclick="show('home')">Back</button>
+</section>
+
+<!-- 9. Replay -->
+<section id="replay">
+  <h1>Replay a real seizure</h1>
+  <p>TODO: plays a held-out SeizeIT2 recording (replay.json) and marks when the alarm fires.</p>
+  <button onclick="show('home')">Back</button>
+</section>
+
+<script>
+  // ---- navigation: show exactly one <section> ----
+  function show(id) {
+    document.querySelectorAll("section").forEach(s => s.classList.toggle("active", s.id === id));
+  }
+
+  // ---- profile, stored only on this phone ----
+  function load() {
+    try { return JSON.parse(localStorage.getItem("profile")) || {}; } catch (e) { return {}; }
+  }
+  function store(p) { try { localStorage.setItem("profile", JSON.stringify(p)); } catch (e) {} }
+  function saveDoctor() {
+    const p = load();
+    p.szType = document.getElementById("szType").value;
+    p.typicalS = Number(document.getElementById("typicalS").value);
+    store(p); show("profile-patient");
+  }
+  function savePatient() {
+    const p = load();
+    p.codeWord = document.getElementById("codeWord").value;
+    p.contactPhone = document.getElementById("contactPhone").value;
+    store(p); show("home");
+  }
+
+  // ---- sleep mode: live motion level (iPhone needs permission after a tap) ----
+  async function startSleep() {
+    if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
+      try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
+    }
+    window.addEventListener("devicemotion", e => {
+      const a = e.accelerationIncludingGravity || {};
+      const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
+      document.getElementById("motionBar").style.width = Math.min(100, Math.abs(mag - 9.81) * 10) + "%";
+      // TODO: replace with the model.json rule (window features + threshold)
+    });
+    document.getElementById("status").textContent = "Monitoring.";
+    show("sleep");
+  }
+
+  // ---- "Are you OK?" countdown ----
+  let timer = null;
+  function startCountdown() {
+    let left = 30;
+    show("countdown");
+    document.getElementById("seconds").textContent = left;
+    timer = setInterval(() => {
+      left -= 1;
+      document.getElementById("seconds").textContent = left;
+      if (left <= 0) { clearInterval(timer); sendAlert(); }
+    }, 1000);
+  }
+  function cancelCountdown() { clearInterval(timer); show("home"); }
+
+  // ---- alert: demo only, opens an sms: link, never sends anything by itself ----
+  function sendAlert() {
+    const p = load();
+    const go = (where) => {
+      const text = "Possible seizure. No answer to the check. Location: " + where;
+      document.getElementById("alertText").textContent = text;
+      document.getElementById("smsBtn").onclick = () =>
+        location.href = "sms:" + (p.contactPhone || "+10000000000") + "&body=" + encodeURIComponent(text);
+      show("alert");
+    };
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => go("https://maps.google.com/?q=" + pos.coords.latitude + "," + pos.coords.longitude),
+        () => go("unknown"));
+    } else go("unknown");
+  }
+
+  show(load().szType ? "home" : "profile-doctor");
+</script>
+</body>
+</html>
