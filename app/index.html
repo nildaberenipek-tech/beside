@@ -106,13 +106,56 @@
     /* ---------- Log ---------- */
     .log-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .log-item:last-child { border-bottom: 0; }
-    .tag { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); white-space: nowrap; }
+    .tag { align-self: flex-start; font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); white-space: nowrap; }
     .tag.alert { background: var(--danger-soft); color: var(--danger); }
+
+    /* ---------- Choice chips (aftercare form) ---------- */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { position: relative; margin: 0; font-weight: 400; }
+    .chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+    .chip span { display: inline-block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line);
+                 background: var(--surface); font-size: 15px; }
+    .chip input:checked + span { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .chip input:focus-visible + span { outline: 3px solid var(--primary-soft); }
+    textarea { width: 100%; min-height: 90px; padding: 12px 14px; font: 16px var(--font); color: var(--ink);
+               background: var(--surface); border: 1px solid var(--line); border-radius: 12px; resize: vertical; }
+
+    /* ---------- Consent ---------- */
+    .perm { display: grid; grid-template-columns: 10px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .perm:last-child { border-bottom: 0; }
+    .perm .bullet { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 7px; }
+
+    /* ---------- Report ---------- */
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .stat .n { font-size: 30px; font-weight: 700; }
+    .stat .l { font-size: 13px; color: var(--muted); }
+    .banner { background: var(--primary-soft); border-radius: 14px; padding: 14px; margin: 12px 0; display: none; }
+    .banner.show { display: block; }
+    .banner .link { padding: 4px 0 0; }
 
     footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 28px; }
   </style>
 </head>
 <body>
+
+<!-- 0. Consent: shown once, on first launch -->
+<section id="consent">
+  <div class="topbar"><div class="brand">Beside</div></div>
+  <h1>Before we start</h1>
+  <p class="muted">Beside watches over you at night and asks the people you choose to check on you. To do that it needs a few permissions. You can change your mind at any time in your phone settings.</p>
+  <div class="card">
+    <div class="perm"><div class="bullet"></div><div><strong>Movement sensor</strong><div class="small muted">To notice the strong, rhythmic movements of a convulsive seizure while you sleep.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Location</strong><div class="small muted">Only added to an emergency message, so your contacts know where to come.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Microphone</strong><div class="small muted">Only while aura listening is on, to hear your code word. Audio is not recorded or sent.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Your health log</strong><div class="small muted">Saved only on this phone. It leaves the phone only when you choose to share a report.</div></div></div>
+  </div>
+  <div class="card" style="background:var(--warn-soft);border-color:transparent">
+    <strong>Beside is a research prototype, not a medical device.</strong>
+    <div class="small">It can miss seizures and it can raise false alarms. Keep following your doctor's safety advice.</div>
+  </div>
+  <button class="btn btn-primary" onclick="acceptConsent()">I understand, allow</button>
+</section>
 
 <!-- 1. Settings (also the first-run setup) -->
 <section id="settings">
@@ -134,6 +177,15 @@
     <label for="typicalS">Typical seizure length (seconds)</label>
     <input id="typicalS" type="number" inputmode="numeric" min="5" max="600" value="90">
     <p class="hint">If a seizure lasts longer than this, your contacts are told it is longer than usual.</p>
+  </div>
+
+  <h2>Your doctor</h2>
+  <div class="card">
+    <label for="docName">Name</label>
+    <input id="docName" placeholder="Dr. ..." autocomplete="off">
+    <label for="docEmail">Email for reports</label>
+    <input id="docEmail" type="email" placeholder="doctor@hospital.org" autocomplete="off">
+    <p class="hint">Your doctor gets a report only when you share it. Emergency messages go to the people below, not to your doctor, because a doctor may not see a message at night.</p>
   </div>
 
   <h2>Aura</h2>
@@ -168,6 +220,12 @@
       <div id="statusText"><strong>Not watching right now</strong></div>
       <div class="small muted" id="statusSub">Start sleep mode before you go to bed.</div>
     </div>
+  </div>
+
+  <div class="banner" id="reportBanner">
+    <strong>Time for your monthly report</strong>
+    <div class="small">Share the last 30 days with your doctor.</div>
+    <button class="link" onclick="openReport()">Open report</button>
   </div>
 
   <button class="btn btn-primary btn-huge" onclick="startSleep()">Start sleep mode</button>
@@ -243,7 +301,49 @@
   </div>
   <h1>Seizure log</h1>
   <p class="muted">Every check-in is saved here so you can show your doctor.</p>
+  <button class="btn btn-primary" onclick="openReport()">Report for my doctor</button>
   <div class="card" id="logList"></div>
+</section>
+
+<!-- 7b. Aftercare: optional, after a real check-in -->
+<section id="aftercare">
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="finishAftercare(false)">Skip</button>
+  </div>
+  <h1>How are you feeling?</h1>
+  <p class="muted">Optional. Your answers go into your log for your doctor. Take your time.</p>
+
+  <h2>Right now I feel</h2>
+  <div class="card chips" id="feelChips"></div>
+
+  <h2>Before this, there was</h2>
+  <div class="card chips" id="triggerChips"></div>
+
+  <h2>Anything else</h2>
+  <textarea id="afterNote" placeholder="For example: woke up on the floor, felt different from usual"></textarea>
+
+  <button class="btn btn-primary" onclick="finishAftercare(true)">Save to my log</button>
+</section>
+
+<!-- 7c. Report for the doctor -->
+<section id="report">
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="openLog()">Back</button>
+  </div>
+  <h1>Report for your doctor</h1>
+  <label for="period">Period</label>
+  <select id="period" onchange="renderReport()">
+    <option value="7">Last 7 days</option>
+    <option value="30" selected>Last 30 days</option>
+    <option value="90">Last 90 days</option>
+  </select>
+  <div class="stats" style="margin-top:14px" id="stats"></div>
+  <div class="card" id="reportText" style="white-space:pre-wrap;font-size:15px"></div>
+  <button class="btn btn-primary" onclick="downloadCsv()">Download spreadsheet (opens in Excel)</button>
+  <button class="btn btn-soft" onclick="shareReport()">Share with my doctor</button>
+  <p class="hint">Sharing opens your email or messaging app. You choose what to send; nothing is sent automatically. The spreadsheet lists every event; the summary above goes in the message.</p>
 </section>
 
 <!-- 8. Replay -->
@@ -275,6 +375,8 @@
     document.getElementById("szType").value = p.szType || "tonic-clonic";
     document.getElementById("typicalS").value = p.typicalS || 90;
     document.getElementById("codeWord").value = p.codeWord || "";
+    document.getElementById("docName").value = p.docName || "";
+    document.getElementById("docEmail").value = p.docEmail || "";
     const list = document.getElementById("contacts");
     list.innerHTML = "";
     (p.contacts && p.contacts.length ? p.contacts : [{ name: "", phone: "" }]).forEach(c => addContact(c));
@@ -299,13 +401,34 @@
       szType: document.getElementById("szType").value,
       typicalS: Number(document.getElementById("typicalS").value) || 90,
       codeWord: document.getElementById("codeWord").value.trim(),
+      docName: document.getElementById("docName").value.trim(),
+      docEmail: document.getElementById("docEmail").value.trim(),
       contacts
     });
     goHome();
   }
 
+  // ---------- consent: once, on first launch ----------
+  async function acceptConsent() {
+    // iPhone only shows the motion prompt after a tap, so we ask here, inside the button press
+    if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
+      try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
+    }
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(() => {}, () => {}, { timeout: 8000 });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());          // only asking; nothing is recorded
+    } catch (e) {}
+    store("consent", { time: new Date().toISOString(), version: 1 });
+    openSettings();
+  }
+
   // ---------- home ----------
   function goHome() {
+    const log = load("log", []);
+    const since = load("lastReport", null) || (log.length ? log[log.length - 1].time : null);
+    document.getElementById("reportBanner").classList.toggle("show",
+      log.length > 0 && since && Date.now() - new Date(since) > 30 * 864e5);
     const h = new Date().getHours();
     document.getElementById("greeting").textContent =
       h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
@@ -318,12 +441,13 @@
   }
 
   // ---------- sleep mode ----------
-  let watching = false, clockTimer = null;
+  let watching = false, clockTimer = null, sleepStartedAt = null;
   async function startSleep() {
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
     }
     if (!watching) window.addEventListener("devicemotion", onMotion);
+    if (!watching) sleepStartedAt = Date.now();
     watching = true;
     const since = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     document.getElementById("statusDot").classList.add("on");
@@ -333,6 +457,9 @@
     show("sleep");
   }
   function stopSleep() {
+    if (watching && sleepStartedAt) {
+      addLog({ kind: "sleep", text: "Sleep mode", duration_s: Math.round((Date.now() - sleepStartedAt) / 1000) });
+    }
     watching = false;
     window.removeEventListener("devicemotion", onMotion);
     clearInterval(clockTimer);
@@ -359,15 +486,19 @@
   }
   function startAura() {
     document.getElementById("auraMsg").textContent = auraText();
-    addLog("Aura reported", "aura");
+    addLog({ kind: "aura", text: "Aura reported" });
     show("aura");
   }
 
   // ---------- "Are you OK?" countdown ----------
   const COUNTDOWN_S = 30;
-  let timer = null, reason = "";
+  let timer = null, reason = "", eventId = null, countdownStartedAt = 0;
   function startCountdown(why) {
     reason = why;
+    countdownStartedAt = Date.now();
+    eventId = addLog({ kind: why === "test" ? "test" : "checkin",
+                       text: why === "test" ? "Test check-in" : why === "demo" ? "Check-in (demo)" : "Possible seizure detected",
+                       outcome: "no answer yet" });
     let left = COUNTDOWN_S;
     clearInterval(timer);
     renderCountdown(left);
@@ -385,8 +516,12 @@
   }
   function imOk() {
     clearInterval(timer);
-    addLog(reason === "test" ? "Test check-in, answered" : "Check-in answered: I'm OK", "ok");
-    watching ? show("sleep") : goHome();
+    const e = findLog(eventId);
+    const after = e && e.outcome === "contacts alerted";
+    updateLog(eventId, { outcome: after ? "false alarm (after alert)" : "answered: I'm OK",
+                         response_s: Math.round((Date.now() - countdownStartedAt) / 1000) });
+    if (reason === "test") { watching ? show("sleep") : goHome(); return; }
+    openAftercare();
   }
 
   // ---------- alert: demo only, opens SMS / WhatsApp, never sends by itself ----------
@@ -399,7 +534,7 @@
   }
   function sendAlert() {
     const p = load("profile", {});
-    addLog("No answer, contacts alerted", "alert");
+    updateLog(eventId, { outcome: "contacts alerted" });
     const render = (where) => {
       alertMessage = "Beside alert: possible seizure. No answer to the check-in at " +
         new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\nLocation: " + where +
@@ -427,11 +562,34 @@
     } else render("unknown");
   }
 
-  // ---------- log ----------
-  function addLog(text, kind) {
+  // ---------- log: one list of events, kept on this phone ----------
+  function addLog(entry) {
     const log = load("log", []);
-    log.unshift({ time: new Date().toISOString(), text, kind });
-    store("log", log.slice(0, 200));
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    log.unshift({ id, time: new Date().toISOString(), ...entry });
+    store("log", log.slice(0, 1000));
+    return id;
+  }
+  function findLog(id) { return load("log", []).find(e => e.id === id); }
+  function updateLog(id, fields) {
+    const log = load("log", []);
+    const e = log.find(x => x.id === id);
+    if (e) { Object.assign(e, fields); store("log", log); }
+  }
+  function fmtDuration(s) {
+    if (s == null) return "";
+    if (s < 60) return s + " s";
+    const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
+    return h ? `${h} h ${m} min` : `${m} min`;
+  }
+  function describe(e) {
+    const bits = [];
+    if (e.outcome) bits.push(e.outcome);
+    if (e.response_s != null) bits.push("answered after " + fmtDuration(e.response_s));
+    if (e.duration_s != null) bits.push(fmtDuration(e.duration_s));
+    if (e.feel && e.feel.length) bits.push("felt: " + e.feel.join(", "));
+    if (e.triggers && e.triggers.length) bits.push("before: " + e.triggers.join(", "));
+    return bits.join(" - ");
   }
   function openLog() {
     const log = load("log", []);
@@ -441,18 +599,131 @@
       const row = document.createElement("div");
       row.className = "log-item";
       const when = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-      row.innerHTML = `<div><div></div><div class="small muted">${when}</div></div><span class="tag"></span>`;
-      row.querySelector("div div").textContent = e.text;
+      row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
+      row.querySelector(".t").textContent = e.text;
+      row.querySelector(".d").textContent = describe(e);
+      row.querySelector(".w").textContent = when;
       const tag = row.querySelector(".tag");
-      tag.textContent = e.kind === "alert" ? "Alert" : e.kind === "aura" ? "Aura" : "OK";
-      if (e.kind === "alert") tag.classList.add("alert");
+      const alerted = (e.outcome || "").includes("alert");
+      tag.textContent = alerted ? "Alert" : e.kind === "aura" ? "Aura" : e.kind === "sleep" ? "Night" : e.kind === "test" ? "Test" : "OK";
+      if (alerted) tag.classList.add("alert");
       box.appendChild(row);
     });
     show("log");
   }
 
+  // ---------- aftercare: optional questions after a real check-in ----------
+  const FEELINGS = ["Fine", "Tired", "Headache", "Confused", "Muscle pain", "Bit my tongue", "Injured", "Wet the bed", "Low mood"];
+  const TRIGGERS = ["Missed medication", "Little sleep", "Stress", "Alcohol", "Ill or fever", "Flashing lights", "Period", "Not sure"];
+  function chips(boxId, items) {
+    const box = document.getElementById(boxId);
+    box.innerHTML = "";
+    items.forEach(t => {
+      const l = document.createElement("label");
+      l.className = "chip";
+      l.innerHTML = '<input type="checkbox"><span></span>';
+      l.querySelector("span").textContent = t;
+      l.querySelector("input").value = t;
+      box.appendChild(l);
+    });
+  }
+  function openAftercare() {
+    chips("feelChips", FEELINGS);
+    chips("triggerChips", TRIGGERS);
+    document.getElementById("afterNote").value = "";
+    show("aftercare");
+  }
+  function finishAftercare(save) {
+    if (save) {
+      const picked = id => [...document.querySelectorAll("#" + id + " input:checked")].map(i => i.value);
+      updateLog(eventId, { feel: picked("feelChips"), triggers: picked("triggerChips"),
+                           note: document.getElementById("afterNote").value.trim() });
+    }
+    watching ? show("sleep") : goHome();
+  }
+
+  // ---------- report for the doctor ----------
+  function reportEvents() {
+    const days = Number(document.getElementById("period").value);
+    const from = Date.now() - days * 864e5;
+    return load("log", []).filter(e => new Date(e.time) >= from).reverse();
+  }
+  function reportSummary(ev) {
+    const p = load("profile", {});
+    const checks = ev.filter(e => e.kind === "checkin");
+    const alerts = checks.filter(e => (e.outcome || "").includes("alert"));
+    const nights = ev.filter(e => e.kind === "sleep");
+    const hours = nights.reduce((a, e) => a + (e.duration_s || 0), 0) / 3600;
+    const count = (key) => {
+      const c = {};
+      checks.forEach(e => (e[key] || []).forEach(x => c[x] = (c[x] || 0) + 1));
+      return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(", ") || "none recorded";
+    };
+    const days = document.getElementById("period").value;
+    return {
+      stats: [[checks.length, "possible seizures detected"], [alerts.length, "times contacts were alerted"],
+              [ev.filter(e => e.kind === "aura").length, "auras reported"], [hours.toFixed(1), "hours watched at night"]],
+      text: `Beside report, last ${days} days (created ${new Date().toLocaleDateString()})\n` +
+            `Seizure type entered by doctor: ${p.szType || "not set"}; typical length ${p.typicalS || "?"} s\n\n` +
+            `Possible seizures detected: ${checks.length}\n` +
+            `Contacts alerted (no answer in ${COUNTDOWN_S} s): ${alerts.length}\n` +
+            `Auras reported: ${ev.filter(e => e.kind === "aura").length}\n` +
+            `Nights watched: ${nights.length} (${hours.toFixed(1)} h)\n\n` +
+            `Afterwards the patient felt: ${count("feel")}\n` +
+            `Possible triggers noted: ${count("triggers")}\n\n` +
+            `Detected by phone movement only; not confirmed by EEG. Beside is a research prototype, not a medical device.`
+    };
+  }
+  function renderReport() {
+    const r = reportSummary(reportEvents());
+    document.getElementById("stats").innerHTML = "";
+    r.stats.forEach(([n, l]) => {
+      const d = document.createElement("div");
+      d.className = "stat";
+      d.innerHTML = '<div class="n"></div><div class="l"></div>';
+      d.querySelector(".n").textContent = n;
+      d.querySelector(".l").textContent = l;
+      document.getElementById("stats").appendChild(d);
+    });
+    document.getElementById("reportText").textContent = r.text;
+  }
+  function openReport() { renderReport(); show("report"); }
+  function csvFile() {
+    const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+    const rows = [["date", "time", "event", "outcome", "answered_after_s", "duration_s", "felt", "before", "note"]];
+    reportEvents().forEach(e => {
+      const d = new Date(e.time);
+      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), e.text, e.outcome, e.response_s,
+                 e.duration_s, (e.feel || []).join("; "), (e.triggers || []).join("; "), e.note]);
+    });
+    const csv = "\ufeff" + rows.map(r => r.map(q).join(",")).join("\r\n");   // BOM so Excel reads it correctly
+    const name = "beside-report-" + new Date().toLocaleDateString("en-CA") + ".csv";
+    return new File([csv], name, { type: "text/csv" });
+  }
+  function downloadCsv() {
+    const f = csvFile();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(f);
+    a.download = f.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    store("lastReport", new Date().toISOString());
+  }
+  async function shareReport() {
+    const text = reportSummary(reportEvents()).text;
+    const f = csvFile();
+    store("lastReport", new Date().toISOString());
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      try { await navigator.share({ title: "Beside report", text, files: [f] }); return; } catch (e) { return; }
+    }
+    const p = load("profile", {});
+    location.href = "mailto:" + encodeURIComponent(p.docEmail || "") + "?subject=" +
+      encodeURIComponent("Beside seizure report") + "&body=" + encodeURIComponent(text + "\n\n(Spreadsheet attached separately.)");
+  }
+
   // ---------- start ----------
-  load("profile", {}).szType ? goHome() : openSettings();
+  if (!load("consent", null)) show("consent");
+  else load("profile", {}).szType ? goHome() : openSettings();
 </script>
 </body>
 </html>

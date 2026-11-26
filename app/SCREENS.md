@@ -12,6 +12,9 @@ Everything is stored on the phone (`localStorage`); nothing is sent to a server.
 | 6 | `countdown` | patient | big "Are you OK?" + 30 s countdown + huge "I'm OK" button; vibrates |
 | 7 | `alert` | contact | message preview with location link; opens `sms:` or `wa.me` link (demo number) |
 | 8 | `log` | patient -> doctor | list: time, duration, heart rate, trigger notes; "share with doctor" |
+| 10 | `consent` | patient, first launch | why each permission is needed; one tap asks for motion, location, microphone |
+| 11 | `aftercare` | patient | optional after a real check-in: how I feel now, possible triggers, note |
+| 12 | `report` | patient -> doctor | 7/30/90-day summary, CSV for Excel, share via email/WhatsApp (never automatic) |
 | 9 | `replay` | jury / demo | plays a real held-out SeizeIT2 seizure from `replay.json`; shows the moment the alarm fires |
 
 ## Alarm rule (same logic as Python `model.json`)
@@ -24,3 +27,9 @@ Everything is stored on the phone (`localStorage`); nothing is sent to a server.
 - `DeviceMotionEvent` (on iPhone: `DeviceMotionEvent.requestPermission()` after a tap)
 - Web Speech API (code word), Geolocation, `navigator.vibrate` (not on iPhone), Wake Lock
 - **Demo mode** button simulates motion for judges who deny sensor permissions.
+
+## Design decisions
+- Emergency messages go to nearby contacts, **not** to the doctor: a doctor may not see a
+  message at night, and the patient could feel safer than they are.
+- Reports are never sent automatically: automatic sending needs a server, and health data would
+  leave the phone. The app reminds the patient once a month instead.
