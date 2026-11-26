@@ -10,6 +10,24 @@ sends a location message to chosen contacts if they do not answer an "Are you OK
 
 *Status: day 1 of development. Sections marked TODO will be filled with held-out results.*
 
+## The problem
+
+- Epilepsy affects around 50 million people worldwide, and about 5 million are diagnosed each year [1].
+- Generalized tonic-clonic seizures (GTCS), and frequent GTCS, are among the factors most strongly
+  associated with sudden unexpected death in epilepsy (SUDEP); nocturnal seizures may also increase
+  risk [2].
+- The presence of another person in the bedroom is *associated* with a lower SUDEP risk. The
+  AAN/AES guideline says clinicians may advise selected patients with frequent GTCS and nocturnal
+  seizures to use nocturnal supervision or other precautions, such as a remote listening device
+  (Level C, the weakest recommendation level) [2]. The same guideline notes that night-time
+  observation can be "overly burdensome and intrusive".
+- People who live alone have no one in the room. Existing alternatives (medical watches,
+  subscriptions, seizure dogs) cost money that many patients do not have.
+
+**What we claim and what we do not.** We try to make a night-time precaution cheap and open
+source: detect a probable convulsive seizure and get a person to check on the patient. We do
+**not** claim the app prevents SUDEP; no study has tested that for this app.
+
 ## Quick start (reproduce)
 
 ```bash
@@ -61,6 +79,14 @@ TODO
 ## With another month
 
 TODO (e.g. emergency-number integration, home validation study, wrist-sensor data)
+
+## References
+
+1. World Health Organization. Epilepsy fact sheet. https://www.who.int/news-room/fact-sheets/detail/epilepsy
+2. Harden C, Tomson T, Gloss D, et al. Practice guideline summary: Sudden unexpected death in
+   epilepsy incidence rates and risk factors. *Neurology* 2017;88(17):1674-1680.
+   doi:10.1212/WNL.0000000000003685
+3. SeizeIT2 dataset, see [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ## AI use
 
