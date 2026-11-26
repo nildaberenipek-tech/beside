@@ -1,9 +1,10 @@
 """Parity on a real recording (optional: downloads ~37 MB from OpenNeuro).
 
-    python tests/test_parity_real.py --sub 024 --run 07
+    python tests/test_parity_real.py --sub 046 --run 01
 
 Runs the full night through src/stream_features.py (Python) and app/detector.js (Node) and
-compares every window's probability and alarms. sub-024 is a TRAINING patient.
+compares every window's probability and alarms. Only TRAINING patients are allowed here,
+so the locked test set is never looked at before the final evaluation.
 """
 import argparse
 import json
@@ -22,9 +23,11 @@ from extract_features import read_channels
 from phone_model import score_trees
 
 a = argparse.ArgumentParser()
-a.add_argument("--sub", default="024")
-a.add_argument("--run", default="07")
+a.add_argument("--sub", default="046")
+a.add_argument("--run", default="01")
 a = a.parse_args()
+if f"sub-{a.sub}" not in json.load(open("configs/split.json"))["train"]:
+    raise SystemExit(f"sub-{a.sub} is not a training patient; refusing to look at the locked test set.")
 stem = f"sub-{a.sub}_ses-01_task-szMonitoring_run-{a.run}"
 path = fetch(f"{PREFIX}sub-{a.sub}/ses-01/mov/{stem}_mov.edf", "data/raw")
 labs = [f"ECGEMG SD ACC {x}" for x in "XYZ"]

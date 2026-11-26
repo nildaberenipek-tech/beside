@@ -209,6 +209,18 @@
     "This screen will play back a real night recorded in a hospital (SeizeIT2 dataset), from a patient the model never saw during training. You will see the movement signal, the moment the seizure starts, and the moment Beside raises the alarm.":
       "Bu ekran, hastanede kaydedilmiş gerçek bir geceyi (SeizeIT2 veri seti) yeniden oynatacak. Kayıt, modelin eğitim sırasında hiç görmediği bir hastaya ait. Hareket sinyalini, nöbetin başladığı anı ve Beside'ın alarm verdiği anı göreceksin.",
 
+    "Movement (chest sensor)": "Hareket (göğüs sensörü)",
+    "Seizure score and alarm threshold": "Nöbet skoru ve alarm eşiği",
+    "Press play. The recording plays 20 times faster than real time.": "Oynat'a bas. Kayıt gerçek zamandan 20 kat hızlı oynar.",
+    "Play": "Oynat", "Pause": "Duraklat", "Play again": "Tekrar oynat", "Speed": "Hız",
+    "Speed 20x": "Hız 20x",
+    "Shaded: the seizure as marked by clinicians from video-EEG. The detector is the same code and model that run on your phone; it learns this person's normal movement from the minutes before.":
+      "Gölgeli alan: doktorların video-EEG ile işaretlediği nöbet. Dedektör, telefonunda çalışan kodun ve modelin aynısıdır; bu kişinin normal hareketini önceki dakikalardan öğrenir.",
+    "Training patient: the model has seen this night during training, so this shows how the app behaves, not how accurate it is. Accuracy on unseen patients is reported in the README.":
+      "Eğitim hastası: model bu geceyi eğitimde gördü. Bu yüzden bu ekran uygulamanın nasıl davrandığını gösterir, ne kadar doğru olduğunu değil. Modelin hiç görmediği hastalardaki doğruluk README'de raporlanır.",
+    "Test patient: the model never saw this person during training.": "Test hastası: model bu kişiyi eğitimde hiç görmedi.",
+    "Could not load the recording.": "Kayıt yüklenemedi.",
+
     // placeholders
     "Dr. ...": "Dr. ...",
     "for example: lighthouse": "örneğin: deniz feneri",

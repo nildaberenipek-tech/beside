@@ -268,7 +268,7 @@
     <button class="btn btn-soft" onclick="openDiary()">My diary<span>Private notes, mood, sleep</span></button>
     <button class="btn btn-soft" onclick="openLog()">Seizure log<span>Every check-in and alert</span></button>
     <button class="btn btn-soft" onclick="openReport()">Report for my doctor<span>Summary and spreadsheet</span></button>
-    <button class="btn btn-soft" onclick="show('replay')">Real recording<span>See how detection works</span></button>
+    <button class="btn btn-soft" onclick="openReplay()">Real recording<span>See how detection works</span></button>
     <button class="btn btn-soft" onclick="startCountdown('test')">Practise the check-in<span>See what happens, nothing is sent</span></button>
   </div>
   <footer>Research prototype. Not a medical device.</footer>
@@ -433,13 +433,25 @@
 <section id="replay">
   <div class="topbar">
     <div class="brand">Beside</div>
-    <button class="link" onclick="show('home')">Back</button>
+    <button class="link" onclick="stopReplay(); goHome()">Back</button>
   </div>
   <h1>A real seizure, replayed</h1>
+  <p class="muted small" id="rpSource"></p>
   <div class="card">
-    <p><strong>Coming in the next version.</strong></p>
-    <p class="small muted">This screen will play back a real night recorded in a hospital (SeizeIT2 dataset), from a patient the model never saw during training. You will see the movement signal, the moment the seizure starts, and the moment Beside raises the alarm.</p>
+    <div class="small muted">Movement (chest sensor)</div>
+    <canvas id="rpMove" height="110" style="width:100%;display:block"></canvas>
+    <div class="small muted" style="margin-top:10px">Seizure score and alarm threshold</div>
+    <canvas id="rpScore" height="110" style="width:100%;display:block"></canvas>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:4px">
+      <span id="rpClock">0:00</span><span id="rpEnd"></span>
+    </div>
   </div>
+  <div class="card" id="rpStatus" style="font-weight:600">Press play. The recording plays 20 times faster than real time.</div>
+  <div class="grid">
+    <button class="btn btn-primary" id="rpPlay" onclick="toggleReplay()">Play</button>
+    <button class="btn btn-soft" onclick="setReplaySpeed()"><span id="rpSpeed" style="display:inline;color:inherit;font-size:16px;margin:0">Speed 20x</span></button>
+  </div>
+  <p class="hint">Shaded: the seizure as marked by clinicians from video-EEG. The detector is the same code and model that run on your phone; it learns this person's normal movement from the minutes before.</p>
 </section>
 
 <script src="i18n.js"></script>
@@ -905,6 +917,117 @@
   function avgSleep() {
     const v = sharedDiary().map(e => parseFloat(e.sleep)).filter(x => !isNaN(x));
     return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : "?";
+  }
+
+  // ---------- replay of a real night ----------
+  let RP = null, rpTimer = null, rpPos = 0, rpSpeed = 20, rpDet = null, rpScores = [], rpMoves = [], rpAlarm = null;
+  async function openReplay() {
+    show("replay");
+    if (!RP) {
+      document.getElementById("rpStatus").textContent = "...";
+      try { RP = await (await fetch("replay.json")).json(); } catch (e) {
+        document.getElementById("rpStatus").textContent = "Could not load the recording."; return;
+      }
+    }
+    const tr = i18n.getLang() === "tr";
+    const sz = RP.seizures[0];
+    document.getElementById("rpSource").textContent = RP.source + ". " + (RP.patient_group === "train"
+      ? T("Training patient: the model has seen this night during training, so this shows how the app behaves, not how accurate it is. Accuracy on unseen patients is reported in the README.")
+      : T("Test patient: the model never saw this person during training."));
+    document.getElementById("rpEnd").textContent = fmtClock(RP.x.length / RP.fs);
+    resetReplay();
+    drawReplay();
+  }
+  function fmtClock(sec) { const m = Math.floor(sec / 60), s2 = Math.floor(sec % 60); return m + ":" + String(s2).padStart(2, "0"); }
+  function resetReplay() {
+    rpPos = 0; rpScores = []; rpMoves = []; rpAlarm = null;
+    rpDet = new BesideDetector.Detector(MODEL, {
+      onWindow: w => rpScores.push([w.t, w.p]),
+      onAlarm: w => { if (rpAlarm === null) rpAlarm = w.t; }
+    });
+    document.getElementById("rpPlay").textContent = T("Play");
+  }
+  function toggleReplay() {
+    if (!RP || !MODEL) return;
+    if (rpTimer) { stopReplay(); return; }
+    if (rpPos >= RP.x.length) resetReplay();
+    document.getElementById("rpPlay").textContent = T("Pause");
+    let last = performance.now();
+    const step = now => {
+      const n = Math.min(RP.x.length - rpPos, Math.round(((now - last) / 1000) * RP.fs * rpSpeed));
+      last = now;
+      const sc = RP.scale;
+      for (let i = 0; i < n; i++, rpPos++) {
+        rpDet.pushSample(RP.x[rpPos] / sc, RP.y[rpPos] / sc, RP.z[rpPos] / sc);
+        if (rpPos % RP.fs === 0) {
+          // movement shown per second: spread of the acceleration magnitude
+          let lo = Infinity, hi = -Infinity;
+          for (let k = rpPos; k < Math.min(rpPos + RP.fs, RP.x.length); k++) {
+            const m = Math.hypot(RP.x[k], RP.y[k], RP.z[k]) / sc; lo = Math.min(lo, m); hi = Math.max(hi, m);
+          }
+          rpMoves.push([rpPos / RP.fs, hi - lo]);
+        }
+      }
+      drawReplay();
+      if (rpPos >= RP.x.length) { stopReplay(); return; }
+      rpTimer = requestAnimationFrame(step);
+    };
+    rpTimer = requestAnimationFrame(step);
+  }
+  function stopReplay() {
+    if (rpTimer) cancelAnimationFrame(rpTimer);
+    rpTimer = null;
+    document.getElementById("rpPlay").textContent = T(RP && rpPos >= RP.x.length ? "Play again" : "Play");
+  }
+  function setReplaySpeed() {
+    rpSpeed = rpSpeed === 20 ? 60 : rpSpeed === 60 ? 5 : 20;
+    document.getElementById("rpSpeed").textContent = T("Speed") + " " + rpSpeed + "x";
+  }
+  function drawReplay() {
+    if (!RP) return;
+    const css = getComputedStyle(document.documentElement);
+    const col = n => css.getPropertyValue(n).trim();
+    const total = RP.x.length / RP.fs, sz = RP.seizures[0], tr = i18n.getLang() === "tr";
+    const thr = MODEL ? MODEL.thresholds.default : 0.95;
+    const panel = (id, pts, yMax, extra) => {
+      const c = document.getElementById(id), dpr = window.devicePixelRatio || 1;
+      const W = c.clientWidth, H = 110;
+      c.width = W * dpr; c.height = H * dpr;
+      const g = c.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, W, H);
+      const X = t => (t / total) * W, Y = v => H - 6 - (Math.min(v, yMax) / yMax) * (H - 12);
+      g.fillStyle = col("--warn-soft"); g.fillRect(X(sz[0]), 0, X(sz[1]) - X(sz[0]), H);
+      g.strokeStyle = col("--line"); g.lineWidth = 1; g.beginPath(); g.moveTo(0, H - 6); g.lineTo(W, H - 6); g.stroke();
+      if (extra) extra(g, X, Y, W, H);
+      g.strokeStyle = col("--primary"); g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+      pts.forEach(([t, v], k) => k ? g.lineTo(X(t), Y(v)) : g.moveTo(X(t), Y(v))); g.stroke();
+      if (rpAlarm !== null) {
+        g.strokeStyle = col("--danger"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(rpAlarm), 0); g.lineTo(X(rpAlarm), H); g.stroke();
+      }
+    };
+    const mMax = Math.max(1e-6, ...rpMoves.map(p => p[1])) * 1.1;
+    panel("rpMove", rpMoves, mMax);
+    panel("rpScore", rpScores, 1, (g, X, Y, W) => {
+      g.setLineDash([5, 4]); g.strokeStyle = col("--muted"); g.lineWidth = 1;
+      g.beginPath(); g.moveTo(0, Y(thr)); g.lineTo(W, Y(thr)); g.stroke(); g.setLineDash([]);
+    });
+    const now = rpPos / RP.fs;
+    document.getElementById("rpClock").textContent = fmtClock(now);
+    const st = document.getElementById("rpStatus");
+    if (rpAlarm !== null && rpAlarm >= sz[0] - 30) {
+      st.textContent = tr ? `Alarm verildi: nöbet başladıktan ${Math.round(rpAlarm - sz[0])} saniye sonra. Telefonda burada "İyi misin?" geri sayımı başlardı.`
+                          : `Alarm raised ${Math.round(rpAlarm - sz[0])} s after the seizure started. On a phone, the "Are you OK?" countdown would start now.`;
+      st.style.color = "var(--danger)";
+    } else if (rpAlarm !== null) {
+      st.textContent = tr ? "Nöbetten önce bir yanlış alarm verildi." : "A false alarm was raised before the seizure.";
+      st.style.color = "var(--warn)";
+    } else if (now >= sz[0]) {
+      st.textContent = tr ? "Nöbet başladı (doktorların video-EEG işaretlemesi). Dedektör izliyor..." : "The seizure has started (clinicians' video-EEG label). The detector is watching...";
+      st.style.color = "var(--warn)";
+    } else if (rpPos > 0) {
+      st.textContent = tr ? `Uyku. Nöbete ${fmtClock(sz[0] - now)} kaldı. Dedektör bu kişinin normal hareketini öğreniyor.`
+                          : `Asleep. ${fmtClock(sz[0] - now)} until the seizure. The detector is learning this person's normal movement.`;
+      st.style.color = "";
+    }
   }
 
   // ---------- report for the doctor ----------

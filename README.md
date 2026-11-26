@@ -67,6 +67,23 @@ threshold was tuned on this patient.*
 - Baselines: motion threshold only, heart rate only, motion + heart rate.
 - TODO: results tables.
 
+## Deviations from the evaluation protocol
+
+We list every time the locked test set was touched before the final evaluation:
+
+1. **Day 1, sub-031 (test patient):** one night was plotted to look at the signals
+   (`results/seizure_sub-031_run-03.png`). No model existed yet.
+2. **Day 1-2, sub-024 run-07 (test patient), by mistake:** we believed sub-024 was a training
+   patient and used this night to check that the feature code ran, and later to compare the Python
+   and JavaScript detectors on real data. In doing so we saw the detector's output on this one night
+   (the tonic-clonic seizure was detected; one false alarm in 19 h). **No model was trained on it,
+   and no threshold or model setting was changed because of it.** Two small changes to the feature
+   code were made at that time (a noise floor for the standard deviation, and "no rhythm" for flat
+   windows); both were made because Python and JavaScript disagreed on flat windows, not because
+   of detection performance. The night stays in the test set: removing it after seeing a good
+   result would bias the estimate. Since then, `tests/test_parity_real.py` and
+   `src/make_replay.py` refuse test patients.
+
 ## Limitations (known on day 1)
 
 - Most SeizeIT2 seizures are focal; the app's main target (nocturnal tonic-clonic seizures)
