@@ -5,8 +5,7 @@ Everything is stored on the phone (`localStorage`); nothing is sent to a server.
 
 | # | Screen id | Who uses it | What it shows / does |
 |---|-----------|-------------|----------------------|
-| 1 | `profile-doctor` | doctor | seizure type (tonic-clonic / focal motor / focal non-motor), typical duration (s), notes |
-| 2 | `profile-patient` | patient | aura yes/no, code word, emergency contacts (name + phone), symptoms |
+| 1 | `settings` | doctor + patient | "Your safety plan": seizure type, typical duration, code word, any number of contacts; editable any time |
 | 3 | `home` | patient | big buttons: Sleep mode, I feel an aura, Log, Replay real seizure; status line |
 | 4 | `sleep` | patient | "Monitoring..." + live motion level bar; dims the screen; keeps phone awake |
 | 5 | `aura` | patient | "High-attention mode ON", contact notified "aura reported"; listens with lower threshold |

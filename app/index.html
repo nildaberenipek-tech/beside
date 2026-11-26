@@ -2,178 +2,457 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f7f6">
   <title>Beside</title>
   <style>
-    /* Skeleton styles only - the UI teammate will redesign this. */
-    :root { --bg: #ffffff; --ink: #111827; --muted: #6b7280; --accent: #2563eb; --danger: #b91c1c; }
-    @media (prefers-color-scheme: dark) { :root { --bg: #0b1020; --ink: #f3f4f6; --muted: #9ca3af; } }
-    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--ink); }
-    section { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
+    /* ---------- Design tokens: change colours and sizes here, everything else follows ---------- */
+    :root {
+      --bg: #f4f7f6;          /* page background: soft, slightly green-grey */
+      --surface: #ffffff;     /* cards */
+      --ink: #1d2b2a;         /* main text */
+      --muted: #5e706e;       /* secondary text */
+      --line: #dfe7e5;        /* borders */
+      --primary: #2f7d74;     /* calm teal: main actions */
+      --primary-ink: #ffffff;
+      --primary-soft: #e3f1ee;
+      --warn: #b4690e;        /* aura / attention */
+      --warn-soft: #fdf1e2;
+      --danger: #c0392b;      /* emergency only */
+      --danger-soft: #fbe9e7;
+      --radius: 18px;
+      --shadow: 0 1px 2px rgba(29, 43, 42, .06), 0 4px 16px rgba(29, 43, 42, .06);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1716; --surface: #172221; --ink: #e8efee; --muted: #9db0ad; --line: #26403c;
+        --primary: #5fb3a8; --primary-ink: #0f1716; --primary-soft: #1c3431;
+        --warn: #e9a24a; --warn-soft: #33281a; --danger: #ef7568; --danger-soft: #3a1f1c;
+        --shadow: none;
+      }
+    }
+
+    /* ---------- Base ---------- */
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink);
+           font-size: 17px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    section { display: none; padding: 20px 16px 32px; max-width: 480px; margin: 0 auto; min-height: 100vh; }
     section.active { display: block; }
-    button { display: block; width: 100%; padding: 16px; margin: 8px 0; font-size: 18px; border-radius: 12px;
-             border: 0; background: var(--accent); color: #fff; }
-    button.danger { background: var(--danger); }
-    label { display: block; margin: 12px 0 4px; color: var(--muted); }
-    input, select { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
-    .big { font-size: 64px; text-align: center; margin: 24px 0; }
-    .bar { height: 16px; background: #e5e7eb; border-radius: 8px; overflow: hidden; }
-    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+    h1 { font-size: 26px; line-height: 1.2; margin: 8px 0 4px; letter-spacing: -0.01em; }
+    h2 { font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase;
+         letter-spacing: .06em; margin: 28px 0 10px; }
+    p  { margin: 6px 0; }
+    .muted { color: var(--muted); }
+    .small { font-size: 14px; }
+
+    /* ---------- Top bar ---------- */
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .brand { font-weight: 700; font-size: 20px; color: var(--primary); letter-spacing: -0.01em; }
+    .link { background: none; border: 0; color: var(--primary); font-size: 16px; font-weight: 600;
+            padding: 8px 0; cursor: pointer; font-family: inherit; }
+
+    /* ---------- Cards ---------- */
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+            padding: 18px; box-shadow: var(--shadow); margin: 12px 0; }
+    .status { display: flex; align-items: center; gap: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+    .dot.on { background: var(--primary); box-shadow: 0 0 0 6px var(--primary-soft); }
+
+    /* ---------- Buttons ---------- */
+    .btn { display: block; width: 100%; min-height: 56px; padding: 16px 18px; margin: 10px 0;
+           border-radius: 14px; border: 1px solid transparent; font: 600 18px/1.2 var(--font);
+           cursor: pointer; text-align: center; }
+    .btn-primary { background: var(--primary); color: var(--primary-ink); }
+    .btn-soft { background: var(--surface); color: var(--ink); border-color: var(--line); }
+    .btn-warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-huge { min-height: 96px; font-size: 26px; border-radius: 22px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid .btn { margin: 0; min-height: 88px; text-align: left; font-size: 16px; }
+    .grid .btn span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ---------- Forms ---------- */
+    label { display: block; font-size: 15px; font-weight: 600; margin: 16px 0 6px; }
+    .card > label:first-child { margin-top: 0; }
+    .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    input, select { width: 100%; min-height: 50px; padding: 12px 14px; font: 17px var(--font);
+                    color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+    input:focus, select:focus { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
+    .contact { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; margin: 8px 0; }
+    .remove { min-height: 50px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line);
+              background: var(--surface); color: var(--danger); font: 600 15px var(--font); cursor: pointer; }
+
+    /* ---------- Sleep mode: dark and quiet whatever the phone theme ---------- */
+    #sleep.active { background: #0b1211; color: #cfdedb; max-width: none; }
+    #sleep .inner { max-width: 480px; margin: 0 auto; text-align: center; padding-top: 12vh; }
+    #sleep .clock { font-size: 64px; font-weight: 300; letter-spacing: -0.02em; }
+    .bar { height: 8px; background: #1e2b29; border-radius: 4px; overflow: hidden; margin: 28px 0 8px; }
+    .bar > div { height: 100%; width: 0; background: #5fb3a8; transition: width .2s; }
+    #sleep .btn-soft { background: transparent; color: #9db0ad; border-color: #26403c; }
+
+    /* ---------- Countdown ---------- */
+    #countdown.active { background: var(--warn-soft); text-align: center; }
+    .ring { width: 220px; height: 220px; margin: 24px auto; position: relative; }
+    .ring svg { transform: rotate(-90deg); }
+    .ring .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+                 font-size: 72px; font-weight: 700; color: var(--warn); }
+
+    /* ---------- Alert ---------- */
+    #alert.active { background: var(--danger-soft); }
+    .message { background: var(--surface); border-radius: 14px; padding: 14px; font-size: 15px;
+               border: 1px solid var(--line); white-space: pre-wrap; }
+
+    /* ---------- Log ---------- */
+    .log-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .log-item:last-child { border-bottom: 0; }
+    .tag { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); white-space: nowrap; }
+    .tag.alert { background: var(--danger-soft); color: var(--danger); }
+
+    footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 28px; }
   </style>
 </head>
 <body>
 
-<!-- 1. Doctor profile -->
-<section id="profile-doctor">
-  <h1>Doctor: seizure profile</h1>
-  <label for="szType">Seizure type</label>
-  <select id="szType">
-    <option value="tonic-clonic">Tonic-clonic (incl. focal to bilateral)</option>
-    <option value="focal-motor">Focal motor</option>
-    <option value="focal-nonmotor">Focal non-motor</option>
-  </select>
-  <label for="typicalS">Typical duration (seconds)</label>
-  <input id="typicalS" type="number" value="90">
-  <button onclick="saveDoctor()">Save and continue</button>
+<!-- 1. Settings (also the first-run setup) -->
+<section id="settings">
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" id="settingsBack" onclick="show('home')">Done</button>
+  </div>
+  <h1>Your safety plan</h1>
+  <p class="muted">Stored only on this phone. Nothing is sent to a server.</p>
+
+  <h2>From your doctor</h2>
+  <div class="card">
+    <label for="szType">Seizure type</label>
+    <select id="szType">
+      <option value="tonic-clonic">Tonic-clonic (including focal to bilateral)</option>
+      <option value="focal-motor">Focal with movement</option>
+      <option value="focal-nonmotor">Focal without movement</option>
+    </select>
+    <label for="typicalS">Typical seizure length (seconds)</label>
+    <input id="typicalS" type="number" inputmode="numeric" min="5" max="600" value="90">
+    <p class="hint">If a seizure lasts longer than this, your contacts are told it is longer than usual.</p>
+  </div>
+
+  <h2>Aura</h2>
+  <div class="card">
+    <label for="codeWord">Your code word</label>
+    <input id="codeWord" placeholder="for example: lighthouse" autocomplete="off">
+    <p class="hint">Say it when you feel an aura. It turns on high-attention mode; it never calls an ambulance by itself.</p>
+  </div>
+
+  <h2>People to contact</h2>
+  <div class="card">
+    <div id="contacts"></div>
+    <button class="btn btn-soft" onclick="addContact()">Add a person</button>
+    <p class="hint">Demo version: messages open in your SMS or WhatsApp app; nothing is sent automatically.</p>
+  </div>
+
+  <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+  <footer>Research prototype. Not a medical device.</footer>
 </section>
 
-<!-- 2. Patient profile -->
-<section id="profile-patient">
-  <h1>Your settings</h1>
-  <label for="codeWord">Code word for an aura</label>
-  <input id="codeWord" placeholder="e.g. lighthouse">
-  <label for="contactPhone">Emergency contact phone (demo number)</label>
-  <input id="contactPhone" type="tel" value="+10000000000">
-  <button onclick="savePatient()">Save</button>
-</section>
-
-<!-- 3. Home -->
+<!-- 2. Home -->
 <section id="home">
-  <h1>Beside</h1>
-  <p id="status">Not monitoring.</p>
-  <button onclick="startSleep()">Sleep mode</button>
-  <button onclick="show('aura')">I feel an aura</button>
-  <button onclick="show('log')">Seizure log</button>
-  <button onclick="show('replay')">Replay a real seizure</button>
-  <button onclick="show('profile-doctor')">Settings</button>
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="openSettings()">Settings</button>
+  </div>
+  <h1 id="greeting">Good evening</h1>
+
+  <div class="card status">
+    <div class="dot" id="statusDot"></div>
+    <div>
+      <div id="statusText"><strong>Not watching right now</strong></div>
+      <div class="small muted" id="statusSub">Start sleep mode before you go to bed.</div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-huge" onclick="startSleep()">Start sleep mode</button>
+
+  <div class="grid">
+    <button class="btn btn-warn" onclick="startAura()">I feel an aura<span>Tell my contact, watch closely</span></button>
+    <button class="btn btn-soft" onclick="openLog()">Seizure log<span>For my doctor</span></button>
+    <button class="btn btn-soft" onclick="show('replay')">Real recording<span>See how detection works</span></button>
+    <button class="btn btn-soft" onclick="startCountdown('test')">Test alarm<span>Practise the check-in</span></button>
+  </div>
+  <footer>Research prototype. Not a medical device.</footer>
 </section>
 
-<!-- 4. Sleep mode -->
+<!-- 3. Sleep mode -->
 <section id="sleep">
-  <h1>Monitoring your sleep</h1>
-  <p>Motion level</p>
-  <div class="bar"><div id="motionBar"></div></div>
-  <button onclick="startCountdown()">Demo mode: simulate a seizure</button>
-  <button onclick="show('home')">Stop</button>
+  <div class="inner">
+    <div class="clock" id="clock">--:--</div>
+    <p>Watching quietly. Sleep well.</p>
+    <div class="bar"><div id="motionBar"></div></div>
+    <p class="small" style="color:#6f8784">Movement</p>
+    <button class="btn btn-soft" style="margin-top:48px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
+    <button class="btn btn-soft" onclick="stopSleep()">I'm awake, stop</button>
+  </div>
 </section>
 
-<!-- 5. Aura mode -->
+<!-- 4. Aura mode -->
 <section id="aura">
-  <h1>High-attention mode ON</h1>
-  <p>Your contact was told: "aura reported". Detection is more sensitive for the next 10 minutes.</p>
-  <button onclick="show('home')">I'm fine now</button>
+  <div class="topbar"><div class="brand">Beside</div></div>
+  <div class="card" style="background:var(--warn-soft);border-color:transparent">
+    <h1 style="color:var(--warn)">High-attention mode is on</h1>
+    <p>For the next 10 minutes, Beside reacts faster to movement.</p>
+  </div>
+  <div class="card">
+    <p class="small muted">Message for your contact</p>
+    <div class="message" id="auraMsg"></div>
+    <button class="btn btn-soft" onclick="sendTo('sms', auraText())">Send by SMS</button>
+  </div>
+  <button class="btn btn-primary" onclick="show('home')">I feel fine now</button>
 </section>
 
-<!-- 6. Are you OK? countdown -->
+<!-- 5. Are you OK? countdown -->
 <section id="countdown">
-  <h1>Are you OK?</h1>
-  <div class="big" id="seconds">30</div>
-  <button onclick="cancelCountdown()">I'm OK</button>
+  <h1 style="margin-top:24px">Are you OK?</h1>
+  <p class="muted">If you do not answer, your contacts will be asked to check on you.</p>
+  <div class="ring">
+    <svg width="220" height="220" viewBox="0 0 220 220">
+      <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(180,105,14,.15)" stroke-width="12"/>
+      <circle id="ringArc" cx="110" cy="110" r="100" fill="none" stroke="var(--warn)" stroke-width="12"
+              stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/>
+    </svg>
+    <div class="num" id="seconds">30</div>
+  </div>
+  <button class="btn btn-primary btn-huge" onclick="imOk()">I'm OK</button>
 </section>
 
-<!-- 7. Alert sent -->
+<!-- 6. Alert -->
 <section id="alert">
-  <h1>Help is being called</h1>
-  <p id="alertText"></p>
-  <button class="danger" id="smsBtn">Open message to contact</button>
-  <button onclick="show('home')">Back</button>
+  <div class="topbar"><div class="brand">Beside</div></div>
+  <h1 style="color:var(--danger)">Asking for help</h1>
+  <p>No answer to the check-in. Send this to your contacts:</p>
+  <div class="card">
+    <div class="message" id="alertText"></div>
+  </div>
+  <div id="alertButtons"></div>
+  <button class="btn btn-soft" onclick="imOk()">It was a false alarm</button>
 </section>
 
-<!-- 8. Log -->
+<!-- 7. Log -->
 <section id="log">
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="show('home')">Back</button>
+  </div>
   <h1>Seizure log</h1>
-  <ul id="logList"></ul>
-  <button onclick="show('home')">Back</button>
+  <p class="muted">Every check-in is saved here so you can show your doctor.</p>
+  <div class="card" id="logList"></div>
 </section>
 
-<!-- 9. Replay -->
+<!-- 8. Replay -->
 <section id="replay">
-  <h1>Replay a real seizure</h1>
-  <p>TODO: plays a held-out SeizeIT2 recording (replay.json) and marks when the alarm fires.</p>
-  <button onclick="show('home')">Back</button>
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="show('home')">Back</button>
+  </div>
+  <h1>A real seizure, replayed</h1>
+  <p class="muted">Coming next: a recording from a patient the model never saw, with the moment the alarm fires.</p>
 </section>
 
 <script>
-  // ---- navigation: show exactly one <section> ----
+  // ---------- navigation: show exactly one <section> ----------
   function show(id) {
     document.querySelectorAll("section").forEach(s => s.classList.toggle("active", s.id === id));
+    window.scrollTo(0, 0);
   }
 
-  // ---- profile, stored only on this phone ----
-  function load() {
-    try { return JSON.parse(localStorage.getItem("profile")) || {}; } catch (e) { return {}; }
+  // ---------- storage: everything stays on this phone ----------
+  function load(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; }
   }
-  function store(p) { try { localStorage.setItem("profile", JSON.stringify(p)); } catch (e) {} }
-  function saveDoctor() {
-    const p = load();
-    p.szType = document.getElementById("szType").value;
-    p.typicalS = Number(document.getElementById("typicalS").value);
-    store(p); show("profile-patient");
+  function store(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
+
+  // ---------- settings ----------
+  function openSettings() {
+    const p = load("profile", {});
+    document.getElementById("szType").value = p.szType || "tonic-clonic";
+    document.getElementById("typicalS").value = p.typicalS || 90;
+    document.getElementById("codeWord").value = p.codeWord || "";
+    const list = document.getElementById("contacts");
+    list.innerHTML = "";
+    (p.contacts && p.contacts.length ? p.contacts : [{ name: "", phone: "" }]).forEach(c => addContact(c));
+    document.getElementById("settingsBack").style.visibility = p.szType ? "visible" : "hidden";
+    show("settings");
   }
-  function savePatient() {
-    const p = load();
-    p.codeWord = document.getElementById("codeWord").value;
-    p.contactPhone = document.getElementById("contactPhone").value;
-    store(p); show("home");
+  function addContact(c = { name: "", phone: "" }) {
+    const row = document.createElement("div");
+    row.className = "contact";
+    row.innerHTML = '<input placeholder="Name" class="c-name"><input placeholder="Phone" type="tel" class="c-phone">' +
+                    '<button class="remove" type="button">Remove</button>';
+    row.querySelector(".c-name").value = c.name;
+    row.querySelector(".c-phone").value = c.phone;
+    row.querySelector(".remove").onclick = () => row.remove();
+    document.getElementById("contacts").appendChild(row);
+  }
+  function saveSettings() {
+    const contacts = [...document.querySelectorAll("#contacts .contact")]
+      .map(r => ({ name: r.querySelector(".c-name").value.trim(), phone: r.querySelector(".c-phone").value.trim() }))
+      .filter(c => c.phone);
+    store("profile", {
+      szType: document.getElementById("szType").value,
+      typicalS: Number(document.getElementById("typicalS").value) || 90,
+      codeWord: document.getElementById("codeWord").value.trim(),
+      contacts
+    });
+    goHome();
   }
 
-  // ---- sleep mode: live motion level (iPhone needs permission after a tap) ----
+  // ---------- home ----------
+  function goHome() {
+    const h = new Date().getHours();
+    document.getElementById("greeting").textContent =
+      h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+    const n = load("profile", {}).contacts?.length || 0;
+    if (!watching) {
+      document.getElementById("statusSub").textContent =
+        n ? `${n} ${n === 1 ? "person" : "people"} will be asked to check on you.` : "Add a contact in Settings.";
+    }
+    show("home");
+  }
+
+  // ---------- sleep mode ----------
+  let watching = false, clockTimer = null;
   async function startSleep() {
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
     }
-    window.addEventListener("devicemotion", e => {
-      const a = e.accelerationIncludingGravity || {};
-      const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
-      document.getElementById("motionBar").style.width = Math.min(100, Math.abs(mag - 9.81) * 10) + "%";
-      // TODO: replace with the model.json rule (window features + threshold)
-    });
-    document.getElementById("status").textContent = "Monitoring.";
+    if (!watching) window.addEventListener("devicemotion", onMotion);
+    watching = true;
+    const since = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("statusDot").classList.add("on");
+    document.getElementById("statusText").innerHTML = "<strong>Watching over you</strong>";
+    document.getElementById("statusSub").textContent = "Since " + since;
+    tickClock(); clockTimer = setInterval(tickClock, 10000);
     show("sleep");
   }
+  function stopSleep() {
+    watching = false;
+    window.removeEventListener("devicemotion", onMotion);
+    clearInterval(clockTimer);
+    document.getElementById("statusDot").classList.remove("on");
+    document.getElementById("statusText").innerHTML = "<strong>Not watching right now</strong>";
+    goHome();
+  }
+  function tickClock() {
+    document.getElementById("clock").textContent =
+      new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  function onMotion(e) {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x === null) return;          // no real sensor (e.g. a laptop): ignore
+    const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
+    document.getElementById("motionBar").style.width = Math.min(100, Math.abs(mag - 9.81) * 10) + "%";
+    // TODO: replace with the model.json detector (window features + trees + threshold)
+  }
 
-  // ---- "Are you OK?" countdown ----
-  let timer = null;
-  function startCountdown() {
-    let left = 30;
+  // ---------- aura ----------
+  function auraText() {
+    return "I just felt an aura. Beside is watching closely for the next 10 minutes. " +
+           "If you get another message, please check on me.";
+  }
+  function startAura() {
+    document.getElementById("auraMsg").textContent = auraText();
+    addLog("Aura reported", "aura");
+    show("aura");
+  }
+
+  // ---------- "Are you OK?" countdown ----------
+  const COUNTDOWN_S = 30;
+  let timer = null, reason = "";
+  function startCountdown(why) {
+    reason = why;
+    let left = COUNTDOWN_S;
+    clearInterval(timer);
+    renderCountdown(left);
     show("countdown");
-    document.getElementById("seconds").textContent = left;
+    if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
     timer = setInterval(() => {
       left -= 1;
-      document.getElementById("seconds").textContent = left;
+      renderCountdown(left);
       if (left <= 0) { clearInterval(timer); sendAlert(); }
     }, 1000);
   }
-  function cancelCountdown() { clearInterval(timer); show("home"); }
+  function renderCountdown(left) {
+    document.getElementById("seconds").textContent = left;
+    document.getElementById("ringArc").setAttribute("stroke-dashoffset", 628.3 * (1 - left / COUNTDOWN_S));
+  }
+  function imOk() {
+    clearInterval(timer);
+    addLog(reason === "test" ? "Test check-in, answered" : "Check-in answered: I'm OK", "ok");
+    watching ? show("sleep") : goHome();
+  }
 
-  // ---- alert: demo only, opens an sms: link, never sends anything by itself ----
+  // ---------- alert: demo only, opens SMS / WhatsApp, never sends by itself ----------
+  let alertMessage = "";
+  function sendTo(kind, text, phone = "") {
+    const digits = phone.replace(/[^0-9+]/g, "");
+    location.href = kind === "sms"
+      ? "sms:" + digits + "?&body=" + encodeURIComponent(text)
+      : "https://wa.me/" + digits.replace("+", "") + "?text=" + encodeURIComponent(text);
+  }
   function sendAlert() {
-    const p = load();
-    const go = (where) => {
-      const text = "Possible seizure. No answer to the check. Location: " + where;
-      document.getElementById("alertText").textContent = text;
-      document.getElementById("smsBtn").onclick = () =>
-        location.href = "sms:" + (p.contactPhone || "+10000000000") + "&body=" + encodeURIComponent(text);
+    const p = load("profile", {});
+    addLog("No answer, contacts alerted", "alert");
+    const render = (where) => {
+      alertMessage = "Beside alert: possible seizure. No answer to the check-in at " +
+        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\nLocation: " + where +
+        "\nPlease call or check on me.";
+      document.getElementById("alertText").textContent = alertMessage;
+      const box = document.getElementById("alertButtons");
+      box.innerHTML = "";
+      (p.contacts && p.contacts.length ? p.contacts : [{ name: "demo contact", phone: "+10000000000" }]).forEach(c => {
+        const b1 = document.createElement("button");
+        b1.className = "btn btn-danger";
+        b1.textContent = "SMS " + (c.name || c.phone);
+        b1.onclick = () => sendTo("sms", alertMessage, c.phone);
+        const b2 = document.createElement("button");
+        b2.className = "btn btn-soft";
+        b2.textContent = "WhatsApp " + (c.name || c.phone);
+        b2.onclick = () => sendTo("wa", alertMessage, c.phone);
+        box.append(b1, b2);
+      });
       show("alert");
     };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => go("https://maps.google.com/?q=" + pos.coords.latitude + "," + pos.coords.longitude),
-        () => go("unknown"));
-    } else go("unknown");
+        pos => render("https://maps.google.com/?q=" + pos.coords.latitude.toFixed(5) + "," + pos.coords.longitude.toFixed(5)),
+        () => render("unknown"), { timeout: 8000 });
+    } else render("unknown");
   }
 
-  show(load().szType ? "home" : "profile-doctor");
+  // ---------- log ----------
+  function addLog(text, kind) {
+    const log = load("log", []);
+    log.unshift({ time: new Date().toISOString(), text, kind });
+    store("log", log.slice(0, 200));
+  }
+  function openLog() {
+    const log = load("log", []);
+    const box = document.getElementById("logList");
+    box.innerHTML = log.length ? "" : '<p class="muted">Nothing yet.</p>';
+    log.forEach(e => {
+      const row = document.createElement("div");
+      row.className = "log-item";
+      const when = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      row.innerHTML = `<div><div></div><div class="small muted">${when}</div></div><span class="tag"></span>`;
+      row.querySelector("div div").textContent = e.text;
+      const tag = row.querySelector(".tag");
+      tag.textContent = e.kind === "alert" ? "Alert" : e.kind === "aura" ? "Aura" : "OK";
+      if (e.kind === "alert") tag.classList.add("alert");
+      box.appendChild(row);
+    });
+    show("log");
+  }
+
+  // ---------- start ----------
+  load("profile", {}).szType ? goHome() : openSettings();
 </script>
 </body>
 </html>
