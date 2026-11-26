@@ -1,4 +1,4 @@
-# seizure-guard (working name)
+# Vigil
 
 > **We do not predict seizures. We detect them, and get a person to the patient's side.**
 > Research prototype for the AI for Medicine Hackathon. **Not a medical device.**
