@@ -13,9 +13,12 @@ sends a location message to chosen contacts if they do not answer an "Are you OK
 ## The problem
 
 - Epilepsy affects around 50 million people worldwide, and about 5 million are diagnosed each year [1].
-- Generalized tonic-clonic seizures (GTCS), and frequent GTCS, are among the factors most strongly
-  associated with sudden unexpected death in epilepsy (SUDEP); nocturnal seizures may also increase
-  risk [2].
+- Sudden unexpected death in epilepsy (SUDEP) affects about 1 in 1,000 adults with epilepsy each
+  year [2].
+- The presence and frequency of generalized tonic-clonic seizures (GTCS) is a major risk factor:
+  people with 3 or more GTCS per year have a 15-fold increased risk of SUDEP. In epilepsy
+  monitoring units, a GTCS was always the event that preceded SUDEP [2, 3]. Nocturnal seizures may
+  also increase risk (low evidence) [2].
 - The presence of another person in the bedroom is *associated* with a lower SUDEP risk. The
   AAN/AES guideline says clinicians may advise selected patients with frequent GTCS and nocturnal
   seizures to use nocturnal supervision or other precautions, such as a remote listening device
@@ -83,10 +86,13 @@ TODO (e.g. emergency-number integration, home validation study, wrist-sensor dat
 ## References
 
 1. World Health Organization. Epilepsy fact sheet. https://www.who.int/news-room/fact-sheets/detail/epilepsy
-2. Harden C, Tomson T, Gloss D, et al. Practice guideline summary: Sudden unexpected death in
-   epilepsy incidence rates and risk factors. *Neurology* 2017;88(17):1674-1680.
-   doi:10.1212/WNL.0000000000003685
-3. SeizeIT2 dataset, see [ATTRIBUTION.md](ATTRIBUTION.md).
+2. American Academy of Neurology and American Epilepsy Society. Practice guideline: Sudden
+   unexpected death in epilepsy incidence rates and risk factors. *Neurology*, published online
+   24 April 2017 (print issue 25 April 2017). Summary for clinicians: AAN.com/guidelines.
+3. Ryvlin P, Nashef L, Lhatoo SD, et al. Incidence and mechanisms of cardiorespiratory arrests in
+   epilepsy monitoring units (MORTEMUS): a retrospective study. *Lancet Neurol* 2013;12:966-977
+   (cited in [2]).
+4. SeizeIT2 dataset, see [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ## AI use
 
