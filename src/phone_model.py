@@ -59,16 +59,25 @@ def export_trees(m):
 
 
 def score_trees(model, X):
-    """Pure-numpy copy of the JavaScript tree walk (used by the parity test)."""
+    """Numpy copy of the JavaScript tree walk (used by the parity test and the final test).
+    Vectorised: all rows descend each tree together, one level per step."""
+    X = np.asarray(X, dtype=float)
     raw = np.full(len(X), model["baseline"])
+    rows = np.arange(len(X))
     for nodes in model["trees"]:
-        for r in range(len(X)):
-            i = 0
-            while not nodes[i][5]:
-                fi, thr, miss_left, l, rr = nodes[i][:5]
-                v = X[r, fi]
-                i = (l if miss_left else rr) if np.isnan(v) else (l if v <= thr else rr)
-            raw[r] += nodes[i][6]
+        nd = np.asarray(nodes, dtype=float)
+        feat, thr, miss_left = nd[:, 0].astype(int), nd[:, 1], nd[:, 2].astype(bool)
+        left, right, leaf, value = nd[:, 3].astype(int), nd[:, 4].astype(int), nd[:, 5].astype(bool), nd[:, 6]
+        i = np.zeros(len(X), dtype=int)
+        while True:
+            active = ~leaf[i]
+            if not active.any():
+                break
+            r, k = rows[active], i[active]
+            v = X[r, feat[k]]
+            go_left = np.where(np.isnan(v), miss_left[k], v <= thr[k])
+            i[active] = np.where(go_left, left[k], right[k])
+        raw += value[i]
     return 1 / (1 + np.exp(-raw))
 
 
