@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 .venv/
 .DS_Store
+
+# dry runs of the final test on TRAINING patients (in-sample, only to check the code)
+results/dryrun_*
