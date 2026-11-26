@@ -283,7 +283,9 @@
     <p class="small" style="color:#6f8784">Movement</p>
     <p class="small" id="modelNote" style="color:#6f8784"></p>
     <p class="small" id="wakeNote" style="color:#6f8784;margin-top:24px">Keep the phone on the charger. The screen stays on but dark, because the phone stops web apps when it locks.</p>
-    <button class="btn btn-soft" style="margin-top:48px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
+    <label class="chip" style="margin-top:36px;display:inline-block"><input type="checkbox" id="demoSens"><span>Sensitive demo mode</span></label>
+    <p class="small" style="color:#6f8784">For demonstrations only: alarms at a 50% score so shaking the phone can trigger it. In real use this would cause many false alarms.</p>
+    <button class="btn btn-soft" style="margin-top:12px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
     <button class="btn btn-soft" onclick="stopSleep()">I'm awake, stop</button>
   </div>
 </section>
@@ -452,7 +454,14 @@
     return new BesideDetector.Detector(MODEL, {
       onWindow: w => {
         // more sensitive for 10 minutes after an aura
-        detector.threshold = Date.now() < highAttentionUntil ? MODEL.thresholds.high_attention : MODEL.thresholds.default;
+        detector.threshold = document.getElementById("demoSens").checked ? 0.5
+          : Date.now() < highAttentionUntil ? MODEL.thresholds.high_attention : MODEL.thresholds.default;
+        const learning = !Number.isFinite(w.features.rel_band);
+        const tr = i18n.getLang() === "tr";
+        document.getElementById("modelNote").textContent = learning
+          ? (tr ? `Normal hareketini öğreniyor... (${detector.windows}/12)` : `Learning your normal movement... (${detector.windows}/12)`)
+          : (tr ? `İzliyor. Nöbet skoru ${(w.p * 100).toFixed(0)}% (alarm eşiği ${(detector.threshold * 100).toFixed(0)}%)`
+                : `Watching. Seizure score ${(w.p * 100).toFixed(0)}% (alarm at ${(detector.threshold * 100).toFixed(0)}%)`);
       },
       onAlarm: () => { if (watching) startCountdown("detected"); }
     });

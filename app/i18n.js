@@ -98,6 +98,9 @@
     "Seizure detection is on. It learns your normal movement during the first minutes.": "Nöbet tespiti açık. İlk dakikalarda senin normal hareketini öğrenir.",
     "Detection model not loaded; only the demo button works.": "Tespit modeli yüklenemedi; sadece demo butonu çalışır.",
     "Demo: simulate a seizure": "Demo: nöbet taklidi",
+    "Sensitive demo mode": "Hassas demo modu",
+    "For demonstrations only: alarms at a 50% score so shaking the phone can trigger it. In real use this would cause many false alarms.":
+      "Sadece gösterim için: %50 skorda alarm verir, böylece telefonu sallamak alarmı tetikleyebilir. Gerçek kullanımda çok sayıda yanlış alarma yol açar.",
     "I'm awake, stop": "Uyandım, durdur",
 
     // aura
