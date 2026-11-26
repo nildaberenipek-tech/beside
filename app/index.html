@@ -165,6 +165,11 @@
   </div>
   <h1>Your safety plan</h1>
   <p class="muted">Stored only on this phone. Nothing is sent to a server.</p>
+  <label for="lang">Language</label>
+  <select id="lang" onchange="changeLang(this.value)">
+    <option value="en">English</option>
+    <option value="tr">Türkçe</option>
+  </select>
 
   <h2>From your doctor</h2>
   <div class="card">
@@ -205,6 +210,22 @@
       <option value="wa">WhatsApp</option>
     </select>
     <p class="hint">Beside writes the message and opens it for you; you tap Send. A website is not allowed to send messages on its own.</p>
+  </div>
+
+  <h2>Automatic alert (optional)</h2>
+  <div class="card">
+    <label class="chip"><input type="checkbox" id="ntfyOn" onchange="renderNtfy()"><span>Send alerts automatically with ntfy</span></label>
+    <div id="ntfyBox" style="display:none">
+      <p class="small" style="margin-top:12px">On your contact's phone:</p>
+      <ol class="small" style="margin:4px 0 0 18px;padding:0">
+        <li>Install the free <strong>ntfy</strong> app (App Store or Google Play).</li>
+        <li>Tap <strong>+</strong> (Subscribe to topic) and type this family code:</li>
+      </ol>
+      <div class="message" id="ntfyCode" style="font-size:20px;font-weight:700;text-align:center;margin:10px 0;user-select:all"></div>
+      <button class="btn btn-soft" type="button" onclick="testNtfy()">Send a test alert</button>
+      <p class="hint" id="ntfyStatus"></p>
+      <p class="hint">When this is on, Beside sends the alert by itself if nobody answers the check-in, and when you report an aura. Only the alert text and your location go through the ntfy.sh service; anyone who knows the code can read these alerts, so share it only with your contacts. SMS and WhatsApp buttons stay available as a backup.</p>
+    </div>
   </div>
 
   <h2>Comfort and light</h2>
@@ -260,6 +281,7 @@
     <p>Watching quietly. Sleep well.</p>
     <div class="bar"><div id="motionBar"></div></div>
     <p class="small" style="color:#6f8784">Movement</p>
+    <p class="small" id="modelNote" style="color:#6f8784"></p>
     <p class="small" id="wakeNote" style="color:#6f8784;margin-top:24px">Keep the phone on the charger. The screen stays on but dark, because the phone stops web apps when it locks.</p>
     <button class="btn btn-soft" style="margin-top:48px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
     <button class="btn btn-soft" onclick="stopSleep()">I'm awake, stop</button>
@@ -301,6 +323,7 @@
   <div class="topbar"><div class="brand">Beside</div></div>
   <h1 style="color:var(--danger)">Asking for help</h1>
   <p>No answer to the check-in. Send this to your contacts:</p>
+  <p id="alertAuto" style="font-weight:600"></p>
   <div class="card">
     <div class="message" id="alertText"></div>
   </div>
@@ -417,10 +440,28 @@
   </div>
 </section>
 
+<script src="i18n.js"></script>
+<script src="detector.js"></script>
 <script>
+  const T = s => i18n.t(s);
+  // ---------- detection model (trained in Python, see src/phone_model.py) ----------
+  let MODEL = null, detector = null, highAttentionUntil = 0;
+  fetch("model.json").then(r => r.json()).then(m => { MODEL = m; }).catch(() => {});
+  function makeDetector() {
+    if (!MODEL || !window.BesideDetector) return null;
+    return new BesideDetector.Detector(MODEL, {
+      onWindow: w => {
+        // more sensitive for 10 minutes after an aura
+        detector.threshold = Date.now() < highAttentionUntil ? MODEL.thresholds.high_attention : MODEL.thresholds.default;
+      },
+      onAlarm: () => { if (watching) startCountdown("detected"); }
+    });
+  }
+
   // ---------- navigation: show exactly one <section> ----------
   function show(id) {
     document.querySelectorAll("section").forEach(s => s.classList.toggle("active", s.id === id));
+    i18n.translateDOM(document.getElementById(id));
     window.scrollTo(0, 0);
   }
 
@@ -431,14 +472,23 @@
   function store(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
 
   // ---------- settings ----------
+  function changeLang(l) {
+    i18n.setLang(l);
+    const p = load("profile", {}); p.lang = l; store("profile", p);
+    i18n.translateDOM(document.body);
+  }
   function openSettings() {
     const p = load("profile", {});
+    document.getElementById("lang").value = i18n.getLang();
     document.getElementById("szType").value = p.szType || "tonic-clonic";
     document.getElementById("typicalS").value = p.typicalS || 90;
     document.getElementById("codeWord").value = p.codeWord || "";
     document.getElementById("docName").value = p.docName || "";
     document.getElementById("docEmail").value = p.docEmail || "";
     document.getElementById("channel").value = p.channel || "sms";
+    document.getElementById("ntfyOn").checked = !!p.ntfyOn;
+    ntfyTopic = p.ntfyTopic || newTopic();
+    renderNtfy();
     const list = document.getElementById("contacts");
     list.innerHTML = "";
     (p.contacts && p.contacts.length ? p.contacts : [{ name: "", phone: "" }]).forEach(c => addContact(c));
@@ -454,6 +504,7 @@
     row.querySelector(".c-phone").value = c.phone;
     row.querySelector(".remove").onclick = () => row.remove();
     document.getElementById("contacts").appendChild(row);
+    i18n.translateDOM(row);
   }
   function saveSettings() {
     const contacts = [...document.querySelectorAll("#contacts .contact")]
@@ -466,6 +517,9 @@
       docName: document.getElementById("docName").value.trim(),
       docEmail: document.getElementById("docEmail").value.trim(),
       channel: document.getElementById("channel").value,
+      lang: i18n.getLang(),
+      ntfyOn: document.getElementById("ntfyOn").checked,
+      ntfyTopic,
       contacts
     });
     goHome();
@@ -486,6 +540,39 @@
     openSettings();
   }
 
+  // ---------- ntfy: optional automatic alerts (free, no account) ----------
+  let ntfyTopic = "";
+  function newTopic() {
+    const a = new Uint8Array(8);
+    crypto.getRandomValues(a);
+    return "beside-" + [...a].map(b => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("");
+  }
+  function renderNtfy() {
+    document.getElementById("ntfyBox").style.display = document.getElementById("ntfyOn").checked ? "block" : "none";
+    document.getElementById("ntfyCode").textContent = ntfyTopic;
+  }
+  async function ntfySend(topic, title, message, priority, click) {
+    // JSON publish to the root URL without custom headers: a simple request, no CORS preflight
+    const body = { topic, title, message, priority };
+    if (click) body.click = click;
+    const r = await fetch("https://ntfy.sh/", { method: "POST", body: JSON.stringify(body) });
+    if (!r.ok) throw new Error("ntfy " + r.status);
+  }
+  async function testNtfy() {
+    const st = document.getElementById("ntfyStatus");
+    st.textContent = T("Sending...");
+    try {
+      await ntfySend(ntfyTopic, "Beside test", "This is a test alert from Beside. If you see it, automatic alerts work.", 3);
+      st.textContent = T("Sent. Check your contact's phone.");
+    } catch (e) { st.textContent = T("Could not send. Check the internet connection.") + " (" + e.message + ")"; }
+  }
+  async function autoAlert(title, message, priority, click) {
+    const p = load("profile", {});
+    if (!p.ntfyOn || !p.ntfyTopic) return "off";
+    try { await ntfySend(p.ntfyTopic, title, message, priority, click); return "sent"; }
+    catch (e) { return "failed"; }
+  }
+
   // ---------- home ----------
   function goHome() {
     const log = load("log", []);
@@ -494,11 +581,13 @@
       log.length > 0 && since && Date.now() - new Date(since) > 30 * 864e5);
     const h = new Date().getHours();
     document.getElementById("greeting").textContent =
-      h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+      T(h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening");
     const n = load("profile", {}).contacts?.length || 0;
     if (!watching) {
       document.getElementById("statusSub").textContent =
-        n ? `${n} ${n === 1 ? "person" : "people"} will be asked to check on you.` : "Add a contact in Settings.";
+        !n ? T("Add a contact in Settings.") : i18n.getLang() === "tr"
+          ? `${n} kişiden seni kontrol etmesi istenecek.`
+          : `${n} ${n === 1 ? "person" : "people"} will be asked to check on you.`;
     }
     show("home");
   }
@@ -522,17 +611,23 @@
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
     }
-    if (!watching) window.addEventListener("devicemotion", onMotion);
+    if (!watching) {
+      detector = makeDetector();
+      window.addEventListener("devicemotion", onMotion);
+    }
     if (!watching) sleepStartedAt = Date.now();
     watching = true;
     const since = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     document.getElementById("statusDot").classList.add("on");
-    document.getElementById("statusText").innerHTML = "<strong>Watching over you</strong>";
-    document.getElementById("statusSub").textContent = "Since " + since;
+    document.getElementById("statusText").innerHTML = "<strong>" + T("Watching over you") + "</strong>";
+    document.getElementById("statusSub").textContent = (i18n.getLang() === "tr" ? "Başlangıç: " : "Since ") + since;
     tickClock(); clockTimer = setInterval(tickClock, 10000);
+    document.getElementById("modelNote").textContent = T(detector
+      ? "Seizure detection is on. It learns your normal movement during the first minutes."
+      : "Detection model not loaded; only the demo button works.");
     const ok = await keepAwake();
-    if (!ok) document.getElementById("wakeNote").textContent =
-      "This browser cannot keep the screen on. Set Auto-Lock to Never while you sleep, and keep the phone on the charger.";
+    if (!ok) document.getElementById("wakeNote").textContent = T(
+      "This browser cannot keep the screen on. Set Auto-Lock to Never while you sleep, and keep the phone on the charger.");
     show("sleep");
   }
   function stopSleep() {
@@ -544,7 +639,7 @@
     window.removeEventListener("devicemotion", onMotion);
     clearInterval(clockTimer);
     document.getElementById("statusDot").classList.remove("on");
-    document.getElementById("statusText").innerHTML = "<strong>Not watching right now</strong>";
+    document.getElementById("statusText").innerHTML = "<strong>" + T("Not watching right now") + "</strong>";
     goHome();
   }
   function tickClock() {
@@ -556,13 +651,12 @@
     if (!a || a.x === null) return;          // no real sensor (e.g. a laptop): ignore
     const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
     document.getElementById("motionBar").style.width = Math.min(100, Math.abs(mag - 9.81) * 10) + "%";
-    // TODO: replace with the model.json detector (window features + trees + threshold)
+    if (detector) detector.push(a.x, a.y, a.z, e.timeStamp || performance.now());
   }
 
   // ---------- aura ----------
   function auraText() {
-    return "I just felt an aura. Beside is watching closely for the next 10 minutes. " +
-           "If you get another message, please check on me.";
+    return T("I just felt an aura. Beside is watching closely for the next 10 minutes. If you get another message, please check on me.");
   }
   function contactsOrDemo() {
     const c = load("profile", {}).contacts;
@@ -583,11 +677,16 @@
     });
   }
   function startAura() {
+    highAttentionUntil = Date.now() + 10 * 60 * 1000;
     const text = auraText();
     document.getElementById("auraMsg").textContent = text;
     addLog({ kind: "aura", text: "Aura reported" });
     contactButtons("auraButtons", text, "btn-warn");
     show("aura");
+    autoAlert(T("Aura reported"), text, 4).then(r => {
+      if (r === "sent") document.querySelector("#aura .card .small.muted").textContent =
+        T("Your contacts were notified automatically. You can also send this message yourself:");
+    });
     // one tap: open the message to the first contact straight away
     const first = contactsOrDemo()[0];
     setTimeout(() => sendTo(load("profile", {}).channel || "sms", text, first.phone), 300);
@@ -639,11 +738,17 @@
     const p = load("profile", {});
     updateLog(eventId, { outcome: "contacts alerted" });
     const render = (where) => {
-      alertMessage = "Beside alert: possible seizure. No answer to the check-in at " +
-        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\nLocation: " + where +
-        "\nPlease call or check on me.";
+      alertMessage = T("Beside alert: possible seizure. No answer to the check-in at") + " " +
+        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\n" + T("Location:") + " " +
+        T(where) + "\n" + T("Please call or check on me.");
       document.getElementById("alertText").textContent = alertMessage;
       contactButtons("alertButtons", alertMessage, "btn-danger");
+      const note = document.getElementById("alertAuto");
+      note.textContent = "";
+      autoAlert(i18n.getLang() === "tr" ? "Beside: olası nöbet" : "Beside: possible seizure", alertMessage, 5, where.startsWith("http") ? where : undefined).then(r => {
+        note.textContent = r === "sent" ? T("Your contacts were alerted automatically.") :
+                           r === "failed" ? T("Automatic alert failed. Please use the buttons below.") : "";
+      });
       show("alert");
     };
     if (navigator.geolocation) {
@@ -669,22 +774,24 @@
   }
   function fmtDuration(s) {
     if (s == null) return "";
-    if (s < 60) return s + " s";
+    const tr = i18n.getLang() === "tr";
+    if (s < 60) return s + (tr ? " sn" : " s");
     const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
-    return h ? `${h} h ${m} min` : `${m} min`;
+    return h ? `${h} ${tr ? "sa" : "h"} ${m} ${tr ? "dk" : "min"}` : `${m} ${tr ? "dk" : "min"}`;
   }
   function describe(e) {
     const bits = [];
-    if (e.outcome) bits.push(e.outcome);
-    if (e.response_s != null) bits.push("answered after " + fmtDuration(e.response_s));
+    const tl = a => a.map(T).join(", ");
+    if (e.outcome) bits.push(T(e.outcome));
+    if (e.response_s != null) bits.push(T("answered after") + " " + fmtDuration(e.response_s));
     if (e.duration_s != null) bits.push(fmtDuration(e.duration_s));
-    if (e.was) bits.push("seizure? " + e.was);
-    if (e.strength) bits.push("strength " + e.strength);
-    if (e.remember) bits.push("remembers: " + e.remember);
-    if (e.recovery) bits.push("recovery " + e.recovery);
-    if (e.feel && e.feel.length) bits.push("felt: " + e.feel.join(", "));
-    if (e.meds && e.meds.length) bits.push("medication: " + e.meds.join(", "));
-    if (e.triggers && e.triggers.length) bits.push("before: " + e.triggers.join(", "));
+    if (e.was) bits.push(T("seizure?") + " " + T(e.was));
+    if (e.strength) bits.push(T("strength") + " " + T(e.strength));
+    if (e.remember) bits.push(T("remembers:") + " " + T(e.remember));
+    if (e.recovery) bits.push(T("recovery") + " " + T(e.recovery));
+    if (e.feel && e.feel.length) bits.push(T("felt:") + " " + tl(e.feel));
+    if (e.meds && e.meds.length) bits.push(T("medication:") + " " + tl(e.meds));
+    if (e.triggers && e.triggers.length) bits.push(T("before:") + " " + tl(e.triggers));
     return bits.join(" - ");
   }
   function openLog() {
@@ -696,12 +803,12 @@
       row.className = "log-item";
       const when = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
       row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
-      row.querySelector(".t").textContent = e.text;
+      row.querySelector(".t").textContent = T(e.text);
       row.querySelector(".d").textContent = describe(e);
       row.querySelector(".w").textContent = when;
       const tag = row.querySelector(".tag");
       const alerted = (e.outcome || "").includes("alert");
-      tag.textContent = alerted ? "Alert" : e.kind === "aura" ? "Aura" : e.kind === "sleep" ? "Night" : e.kind === "test" ? "Test" : "OK";
+      tag.textContent = T(alerted ? "Alert" : e.kind === "aura" ? "Aura" : e.kind === "sleep" ? "Night" : e.kind === "test" ? "Test" : "OK");
       if (alerted) tag.classList.add("alert");
       box.appendChild(row);
     });
@@ -714,12 +821,12 @@
   function chips(boxId, items, single = false) {
     const box = document.getElementById(boxId);
     box.innerHTML = "";
-    items.forEach(t => {
+    items.forEach(item => {
       const l = document.createElement("label");
       l.className = "chip";
       l.innerHTML = single ? '<input type="radio" name="' + boxId + '"><span></span>' : '<input type="checkbox"><span></span>';
-      l.querySelector("span").textContent = t;
-      l.querySelector("input").value = t;
+      l.querySelector("span").textContent = T(item);
+      l.querySelector("input").value = item;
       box.appendChild(l);
     });
   }
@@ -773,11 +880,11 @@
       const row = document.createElement("div");
       row.className = "log-item";
       row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
-      row.querySelector(".t").textContent = e.text || "(no notes)";
-      row.querySelector(".d").textContent = [e.mood && "mood " + e.mood, e.sleep && e.sleep + " h sleep",
-                                             e.stress && "stress " + e.stress, e.med].filter(Boolean).join(" - ");
+      row.querySelector(".t").textContent = e.text || T("(no notes)");
+      row.querySelector(".d").textContent = [e.mood && T("mood") + " " + T(e.mood), e.sleep && e.sleep + " " + T("h sleep"),
+                                             e.stress && T("stress") + " " + T(e.stress), e.med && T(e.med)].filter(Boolean).join(" - ");
       row.querySelector(".w").textContent = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-      row.querySelector(".tag").textContent = e.share ? "Shared" : "Private";
+      row.querySelector(".tag").textContent = T(e.share ? "Shared" : "Private");
       box.appendChild(row);
     });
   }
@@ -806,23 +913,43 @@
     const count = (key) => {
       const c = {};
       checks.forEach(e => (e[key] || []).forEach(x => c[x] = (c[x] || 0) + 1));
-      return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(", ") || "none recorded";
+      return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${T(k)} (${v})`).join(", ")
+        || (i18n.getLang() === "tr" ? "kayıt yok" : "none recorded");
     };
-    const days = document.getElementById("period").value;
+    const v = {
+      days: document.getElementById("period").value, today: new Date().toLocaleDateString(),
+      type: T({ "tonic-clonic": "Tonic-clonic (including focal to bilateral)", "focal-motor": "Focal with movement",
+                "focal-nonmotor": "Focal without movement" }[p.szType] || "-"),
+      typical: p.typicalS || "?", checks: checks.length, alerts: alerts.length, cd: COUNTDOWN_S,
+      auras: ev.filter(e => e.kind === "aura").length, nights: nights.length, hours: hours.toFixed(1),
+      feel: count("feel"), trig: count("triggers"), diary: sharedDiary().length,
+      sleep: sharedDiary().some(e => e.sleep != null && e.sleep !== "") ? avgSleep() : null
+    };
+    const text = i18n.getLang() === "tr"
+      ? `Beside raporu, son ${v.days} gün (oluşturulma: ${v.today})\n` +
+        `Doktorun girdiği nöbet türü: ${v.type}; tipik süre ${v.typical} sn\n\n` +
+        `Tespit edilen olası nöbet: ${v.checks}\n` +
+        `Yakınlara haber verilen (${v.cd} sn içinde cevap yok): ${v.alerts}\n` +
+        `Bildirilen aura: ${v.auras}\n` +
+        `İzlenen gece: ${v.nights} (${v.hours} saat)\n\n` +
+        `Sonrasında hasta şunları hissetti: ${v.feel}\n` +
+        `Not edilen olası tetikleyiciler: ${v.trig}\n` +
+        `Paylaşılan günlük notu: ${v.diary}` + (v.sleep ? `, ortalama uyku ${v.sleep} saat` : "") + `\n\n` +
+        `Sadece telefon hareketiyle tespit edilmiştir; EEG ile doğrulanmamıştır. Beside bir araştırma prototipidir, tıbbi cihaz değildir.`
+      : `Beside report, last ${v.days} days (created ${v.today})\n` +
+        `Seizure type entered by doctor: ${v.type}; typical length ${v.typical} s\n\n` +
+        `Possible seizures detected: ${v.checks}\n` +
+        `Contacts alerted (no answer in ${v.cd} s): ${v.alerts}\n` +
+        `Auras reported: ${v.auras}\n` +
+        `Nights watched: ${v.nights} (${v.hours} h)\n\n` +
+        `Afterwards the patient felt: ${v.feel}\n` +
+        `Possible triggers noted: ${v.trig}\n` +
+        `Shared diary entries: ${v.diary}` + (v.sleep ? `, average sleep ${v.sleep} h` : "") + `\n\n` +
+        `Detected by phone movement only; not confirmed by EEG. Beside is a research prototype, not a medical device.`;
     return {
-      stats: [[checks.length, "possible seizures detected"], [alerts.length, "times contacts were alerted"],
-              [ev.filter(e => e.kind === "aura").length, "auras reported"], [hours.toFixed(1), "hours watched at night"]],
-      text: `Beside report, last ${days} days (created ${new Date().toLocaleDateString()})\n` +
-            `Seizure type entered by doctor: ${p.szType || "not set"}; typical length ${p.typicalS || "?"} s\n\n` +
-            `Possible seizures detected: ${checks.length}\n` +
-            `Contacts alerted (no answer in ${COUNTDOWN_S} s): ${alerts.length}\n` +
-            `Auras reported: ${ev.filter(e => e.kind === "aura").length}\n` +
-            `Nights watched: ${nights.length} (${hours.toFixed(1)} h)\n\n` +
-            `Afterwards the patient felt: ${count("feel")}\n` +
-            `Possible triggers noted: ${count("triggers")}\n` +
-            `Shared diary entries: ${sharedDiary().length}` +
-            (sharedDiary().some(e => e.sleep != null && e.sleep !== "") ? `, average sleep ${avgSleep()} h` : "") + `\n\n` +
-            `Detected by phone movement only; not confirmed by EEG. Beside is a research prototype, not a medical device.`
+      stats: [[v.checks, T("possible seizures detected")], [v.alerts, T("times contacts were alerted")],
+              [v.auras, T("auras reported")], [v.hours, T("hours watched at night")]],
+      text
     };
   }
   function renderReport() {
@@ -881,6 +1008,7 @@
   }
 
   // ---------- start ----------
+  i18n.setLang(load("profile", {}).lang || i18n.detectLang());
   if (!load("consent", null)) show("consent");
   else load("profile", {}).szType ? goHome() : openSettings();
 </script>
