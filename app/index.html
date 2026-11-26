@@ -199,7 +199,19 @@
   <div class="card">
     <div id="contacts"></div>
     <button class="btn btn-soft" onclick="addContact()">Add a person</button>
-    <p class="hint">Demo version: messages open in your SMS or WhatsApp app; nothing is sent automatically.</p>
+    <label for="channel">Send my messages by</label>
+    <select id="channel">
+      <option value="sms">SMS</option>
+      <option value="wa">WhatsApp</option>
+    </select>
+    <p class="hint">Beside writes the message and opens it for you; you tap Send. A website is not allowed to send messages on its own.</p>
+  </div>
+
+  <h2>Comfort and light</h2>
+  <div class="card">
+    <p class="small">Beside never flashes or flickers. To soften flashing in other apps too, your iPhone has a built-in setting:</p>
+    <p class="small"><strong>Settings &rarr; Accessibility &rarr; Motion &rarr; Dim Flashing Lights</strong></p>
+    <p class="hint">Ask your doctor whether light sensitivity matters for your type of epilepsy.</p>
   </div>
 
   <button class="btn btn-primary" onclick="saveSettings()">Save</button>
@@ -231,10 +243,12 @@
   <button class="btn btn-primary btn-huge" onclick="startSleep()">Start sleep mode</button>
 
   <div class="grid">
-    <button class="btn btn-warn" onclick="startAura()">I feel an aura<span>Tell my contact, watch closely</span></button>
-    <button class="btn btn-soft" onclick="openLog()">Seizure log<span>For my doctor</span></button>
+    <button class="btn btn-warn" onclick="startAura()">I feel an aura<span>Message my contact now</span></button>
+    <button class="btn btn-soft" onclick="openDiary()">My diary<span>Private notes, mood, sleep</span></button>
+    <button class="btn btn-soft" onclick="openLog()">Seizure log<span>Every check-in and alert</span></button>
+    <button class="btn btn-soft" onclick="openReport()">Report for my doctor<span>Summary and spreadsheet</span></button>
     <button class="btn btn-soft" onclick="show('replay')">Real recording<span>See how detection works</span></button>
-    <button class="btn btn-soft" onclick="startCountdown('test')">Test alarm<span>Practise the check-in</span></button>
+    <button class="btn btn-soft" onclick="startCountdown('test')">Practise the check-in<span>See what happens, nothing is sent</span></button>
   </div>
   <footer>Research prototype. Not a medical device.</footer>
 </section>
@@ -246,6 +260,7 @@
     <p>Watching quietly. Sleep well.</p>
     <div class="bar"><div id="motionBar"></div></div>
     <p class="small" style="color:#6f8784">Movement</p>
+    <p class="small" id="wakeNote" style="color:#6f8784;margin-top:24px">Keep the phone on the charger. The screen stays on but dark, because the phone stops web apps when it locks.</p>
     <button class="btn btn-soft" style="margin-top:48px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
     <button class="btn btn-soft" onclick="stopSleep()">I'm awake, stop</button>
   </div>
@@ -259,9 +274,9 @@
     <p>For the next 10 minutes, Beside reacts faster to movement.</p>
   </div>
   <div class="card">
-    <p class="small muted">Message for your contact</p>
+    <p class="small muted">We opened this message for you. Tap Send in your messaging app.</p>
     <div class="message" id="auraMsg"></div>
-    <button class="btn btn-soft" onclick="sendTo('sms', auraText())">Send by SMS</button>
+    <div id="auraButtons"></div>
   </div>
   <button class="btn btn-primary" onclick="show('home')">I feel fine now</button>
 </section>
@@ -314,11 +329,26 @@
   <h1>How are you feeling?</h1>
   <p class="muted">Optional. Your answers go into your log for your doctor. Take your time.</p>
 
+  <h2>Was it a seizure?</h2>
+  <div class="card chips" id="wasChips"></div>
+
+  <h2>How strong did it feel?</h2>
+  <div class="card chips" id="strengthChips"></div>
+
+  <h2>Do you remember it?</h2>
+  <div class="card chips" id="rememberChips"></div>
+
   <h2>Right now I feel</h2>
   <div class="card chips" id="feelChips"></div>
 
+  <h2>Time until I felt like myself again</h2>
+  <div class="card chips" id="recoveryChips"></div>
+
   <h2>Before this, there was</h2>
   <div class="card chips" id="triggerChips"></div>
+
+  <h2>My medication today</h2>
+  <div class="card chips" id="medChips"></div>
 
   <h2>Anything else</h2>
   <textarea id="afterNote" placeholder="For example: woke up on the floor, felt different from usual"></textarea>
@@ -326,11 +356,39 @@
   <button class="btn btn-primary" onclick="finishAftercare(true)">Save to my log</button>
 </section>
 
+<!-- 7d. Diary: private daily notes -->
+<section id="diary">
+  <div class="topbar">
+    <div class="brand">Beside</div>
+    <button class="link" onclick="goHome()">Back</button>
+  </div>
+  <h1>My diary</h1>
+  <p class="muted">Just for you. An entry goes into a doctor report only if you tick the box.</p>
+
+  <div class="card">
+    <label>Today I feel</label>
+    <div class="chips" id="moodChips"></div>
+    <label for="dSleep">Hours of sleep last night</label>
+    <input id="dSleep" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="e.g. 7.5">
+    <label>Stress</label>
+    <div class="chips" id="stressChips"></div>
+    <label>Medication</label>
+    <div class="chips" id="dMedChips"></div>
+    <label for="dText">Notes</label>
+    <textarea id="dText" placeholder="Anything you want to remember about today"></textarea>
+    <label class="chip" style="margin-top:12px"><input type="checkbox" id="dShare"><span>Include in doctor report</span></label>
+    <button class="btn btn-primary" onclick="saveDiary()">Save today's entry</button>
+  </div>
+
+  <h2>Earlier entries</h2>
+  <div class="card" id="diaryList"></div>
+</section>
+
 <!-- 7c. Report for the doctor -->
 <section id="report">
   <div class="topbar">
     <div class="brand">Beside</div>
-    <button class="link" onclick="openLog()">Back</button>
+    <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>Report for your doctor</h1>
   <label for="period">Period</label>
@@ -353,7 +411,10 @@
     <button class="link" onclick="show('home')">Back</button>
   </div>
   <h1>A real seizure, replayed</h1>
-  <p class="muted">Coming next: a recording from a patient the model never saw, with the moment the alarm fires.</p>
+  <div class="card">
+    <p><strong>Coming in the next version.</strong></p>
+    <p class="small muted">This screen will play back a real night recorded in a hospital (SeizeIT2 dataset), from a patient the model never saw during training. You will see the movement signal, the moment the seizure starts, and the moment Beside raises the alarm.</p>
+  </div>
 </section>
 
 <script>
@@ -377,6 +438,7 @@
     document.getElementById("codeWord").value = p.codeWord || "";
     document.getElementById("docName").value = p.docName || "";
     document.getElementById("docEmail").value = p.docEmail || "";
+    document.getElementById("channel").value = p.channel || "sms";
     const list = document.getElementById("contacts");
     list.innerHTML = "";
     (p.contacts && p.contacts.length ? p.contacts : [{ name: "", phone: "" }]).forEach(c => addContact(c));
@@ -403,6 +465,7 @@
       codeWord: document.getElementById("codeWord").value.trim(),
       docName: document.getElementById("docName").value.trim(),
       docEmail: document.getElementById("docEmail").value.trim(),
+      channel: document.getElementById("channel").value,
       contacts
     });
     goHome();
@@ -441,7 +504,20 @@
   }
 
   // ---------- sleep mode ----------
-  let watching = false, clockTimer = null, sleepStartedAt = null;
+  let watching = false, clockTimer = null, sleepStartedAt = null, wakeLock = null;
+  // keep the screen on during sleep mode: a locked iPhone pauses web pages, which would stop detection
+  async function keepAwake() {
+    try {
+      if ("wakeLock" in navigator) {
+        wakeLock = await navigator.wakeLock.request("screen");
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (watching && document.visibilityState === "visible") keepAwake();
+  });
   async function startSleep() {
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
@@ -454,6 +530,9 @@
     document.getElementById("statusText").innerHTML = "<strong>Watching over you</strong>";
     document.getElementById("statusSub").textContent = "Since " + since;
     tickClock(); clockTimer = setInterval(tickClock, 10000);
+    const ok = await keepAwake();
+    if (!ok) document.getElementById("wakeNote").textContent =
+      "This browser cannot keep the screen on. Set Auto-Lock to Never while you sleep, and keep the phone on the charger.";
     show("sleep");
   }
   function stopSleep() {
@@ -461,6 +540,7 @@
       addLog({ kind: "sleep", text: "Sleep mode", duration_s: Math.round((Date.now() - sleepStartedAt) / 1000) });
     }
     watching = false;
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
     window.removeEventListener("devicemotion", onMotion);
     clearInterval(clockTimer);
     document.getElementById("statusDot").classList.remove("on");
@@ -484,10 +564,33 @@
     return "I just felt an aura. Beside is watching closely for the next 10 minutes. " +
            "If you get another message, please check on me.";
   }
+  function contactsOrDemo() {
+    const c = load("profile", {}).contacts;
+    return c && c.length ? c : [{ name: "demo contact", phone: "+10000000000" }];
+  }
+  function contactButtons(boxId, text, primaryClass) {
+    const ch = load("profile", {}).channel || "sms";
+    const box = document.getElementById(boxId);
+    box.innerHTML = "";
+    contactsOrDemo().forEach(c => {
+      [[ch, primaryClass], [ch === "sms" ? "wa" : "sms", "btn-soft"]].forEach(([kind, cls]) => {
+        const b = document.createElement("button");
+        b.className = "btn " + cls;
+        b.textContent = (kind === "sms" ? "SMS " : "WhatsApp ") + (c.name || c.phone);
+        b.onclick = () => sendTo(kind, text, c.phone);
+        box.appendChild(b);
+      });
+    });
+  }
   function startAura() {
-    document.getElementById("auraMsg").textContent = auraText();
+    const text = auraText();
+    document.getElementById("auraMsg").textContent = text;
     addLog({ kind: "aura", text: "Aura reported" });
+    contactButtons("auraButtons", text, "btn-warn");
     show("aura");
+    // one tap: open the message to the first contact straight away
+    const first = contactsOrDemo()[0];
+    setTimeout(() => sendTo(load("profile", {}).channel || "sms", text, first.phone), 300);
   }
 
   // ---------- "Are you OK?" countdown ----------
@@ -497,7 +600,7 @@
     reason = why;
     countdownStartedAt = Date.now();
     eventId = addLog({ kind: why === "test" ? "test" : "checkin",
-                       text: why === "test" ? "Test check-in" : why === "demo" ? "Check-in (demo)" : "Possible seizure detected",
+                       text: why === "test" ? "Practice check-in" : why === "demo" ? "Check-in (demo)" : "Possible seizure detected",
                        outcome: "no answer yet" });
     let left = COUNTDOWN_S;
     clearInterval(timer);
@@ -540,19 +643,7 @@
         new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\nLocation: " + where +
         "\nPlease call or check on me.";
       document.getElementById("alertText").textContent = alertMessage;
-      const box = document.getElementById("alertButtons");
-      box.innerHTML = "";
-      (p.contacts && p.contacts.length ? p.contacts : [{ name: "demo contact", phone: "+10000000000" }]).forEach(c => {
-        const b1 = document.createElement("button");
-        b1.className = "btn btn-danger";
-        b1.textContent = "SMS " + (c.name || c.phone);
-        b1.onclick = () => sendTo("sms", alertMessage, c.phone);
-        const b2 = document.createElement("button");
-        b2.className = "btn btn-soft";
-        b2.textContent = "WhatsApp " + (c.name || c.phone);
-        b2.onclick = () => sendTo("wa", alertMessage, c.phone);
-        box.append(b1, b2);
-      });
+      contactButtons("alertButtons", alertMessage, "btn-danger");
       show("alert");
     };
     if (navigator.geolocation) {
@@ -587,7 +678,12 @@
     if (e.outcome) bits.push(e.outcome);
     if (e.response_s != null) bits.push("answered after " + fmtDuration(e.response_s));
     if (e.duration_s != null) bits.push(fmtDuration(e.duration_s));
+    if (e.was) bits.push("seizure? " + e.was);
+    if (e.strength) bits.push("strength " + e.strength);
+    if (e.remember) bits.push("remembers: " + e.remember);
+    if (e.recovery) bits.push("recovery " + e.recovery);
     if (e.feel && e.feel.length) bits.push("felt: " + e.feel.join(", "));
+    if (e.meds && e.meds.length) bits.push("medication: " + e.meds.join(", "));
     if (e.triggers && e.triggers.length) bits.push("before: " + e.triggers.join(", "));
     return bits.join(" - ");
   }
@@ -615,31 +711,84 @@
   // ---------- aftercare: optional questions after a real check-in ----------
   const FEELINGS = ["Fine", "Tired", "Headache", "Confused", "Muscle pain", "Bit my tongue", "Injured", "Wet the bed", "Low mood"];
   const TRIGGERS = ["Missed medication", "Little sleep", "Stress", "Alcohol", "Ill or fever", "Flashing lights", "Period", "Not sure"];
-  function chips(boxId, items) {
+  function chips(boxId, items, single = false) {
     const box = document.getElementById(boxId);
     box.innerHTML = "";
     items.forEach(t => {
       const l = document.createElement("label");
       l.className = "chip";
-      l.innerHTML = '<input type="checkbox"><span></span>';
+      l.innerHTML = single ? '<input type="radio" name="' + boxId + '"><span></span>' : '<input type="checkbox"><span></span>';
       l.querySelector("span").textContent = t;
       l.querySelector("input").value = t;
       box.appendChild(l);
     });
   }
+  const picked = id => [...document.querySelectorAll("#" + id + " input:checked")].map(i => i.value);
+  const pickedOne = id => picked(id)[0] || "";
   function openAftercare() {
+    chips("wasChips", ["I think so", "No, false alarm", "Not sure"], true);
+    chips("strengthChips", ["1 mild", "2", "3", "4", "5 very strong"], true);
+    chips("rememberChips", ["Yes", "Partly", "No"], true);
     chips("feelChips", FEELINGS);
+    chips("recoveryChips", ["Under 15 min", "15-60 min", "1-3 hours", "More than 3 hours", "Not yet"], true);
     chips("triggerChips", TRIGGERS);
+    chips("medChips", ["Taken on time", "Taken late", "Missed", "Rescue medicine used", "Not sure"]);
     document.getElementById("afterNote").value = "";
     show("aftercare");
   }
   function finishAftercare(save) {
     if (save) {
-      const picked = id => [...document.querySelectorAll("#" + id + " input:checked")].map(i => i.value);
-      updateLog(eventId, { feel: picked("feelChips"), triggers: picked("triggerChips"),
+      updateLog(eventId, { was: pickedOne("wasChips"), strength: pickedOne("strengthChips"),
+                           remember: pickedOne("rememberChips"), recovery: pickedOne("recoveryChips"),
+                           meds: picked("medChips"),
+                           feel: picked("feelChips"), triggers: picked("triggerChips"),
                            note: document.getElementById("afterNote").value.trim() });
     }
     watching ? show("sleep") : goHome();
+  }
+
+  // ---------- diary: private by default ----------
+  function openDiary() {
+    chips("moodChips", ["Good", "Okay", "Low"], true);
+    chips("stressChips", ["Low", "Medium", "High"], true);
+    chips("dMedChips", ["All taken", "Some missed", "All missed"], true);
+    ["dSleep", "dText"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("dShare").checked = false;
+    renderDiary();
+    show("diary");
+  }
+  function saveDiary() {
+    const d = load("diary", []);
+    d.unshift({ time: new Date().toISOString(), mood: pickedOne("moodChips"), stress: pickedOne("stressChips"),
+                med: pickedOne("dMedChips"), sleep: document.getElementById("dSleep").value,
+                text: document.getElementById("dText").value.trim(), share: document.getElementById("dShare").checked });
+    store("diary", d.slice(0, 1000));
+    openDiary();
+  }
+  function renderDiary() {
+    const d = load("diary", []);
+    const box = document.getElementById("diaryList");
+    box.innerHTML = d.length ? "" : '<p class="muted">No entries yet.</p>';
+    d.forEach(e => {
+      const row = document.createElement("div");
+      row.className = "log-item";
+      row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
+      row.querySelector(".t").textContent = e.text || "(no notes)";
+      row.querySelector(".d").textContent = [e.mood && "mood " + e.mood, e.sleep && e.sleep + " h sleep",
+                                             e.stress && "stress " + e.stress, e.med].filter(Boolean).join(" - ");
+      row.querySelector(".w").textContent = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      row.querySelector(".tag").textContent = e.share ? "Shared" : "Private";
+      box.appendChild(row);
+    });
+  }
+  function sharedDiary() {
+    const days = Number(document.getElementById("period").value);
+    const from = Date.now() - days * 864e5;
+    return load("diary", []).filter(e => e.share && new Date(e.time) >= from).reverse();
+  }
+  function avgSleep() {
+    const v = sharedDiary().map(e => parseFloat(e.sleep)).filter(x => !isNaN(x));
+    return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : "?";
   }
 
   // ---------- report for the doctor ----------
@@ -670,7 +819,9 @@
             `Auras reported: ${ev.filter(e => e.kind === "aura").length}\n` +
             `Nights watched: ${nights.length} (${hours.toFixed(1)} h)\n\n` +
             `Afterwards the patient felt: ${count("feel")}\n` +
-            `Possible triggers noted: ${count("triggers")}\n\n` +
+            `Possible triggers noted: ${count("triggers")}\n` +
+            `Shared diary entries: ${sharedDiary().length}` +
+            (sharedDiary().some(e => e.sleep != null && e.sleep !== "") ? `, average sleep ${avgSleep()} h` : "") + `\n\n` +
             `Detected by phone movement only; not confirmed by EEG. Beside is a research prototype, not a medical device.`
     };
   }
@@ -690,11 +841,19 @@
   function openReport() { renderReport(); show("report"); }
   function csvFile() {
     const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
-    const rows = [["date", "time", "event", "outcome", "answered_after_s", "duration_s", "felt", "before", "note"]];
+    const rows = [["date", "time", "event", "outcome", "answered_after_s", "duration_s", "was_seizure", "strength_1to5",
+                   "remembers", "recovery", "felt", "before", "medication", "note"]];
     reportEvents().forEach(e => {
       const d = new Date(e.time);
       rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), e.text, e.outcome, e.response_s,
-                 e.duration_s, (e.feel || []).join("; "), (e.triggers || []).join("; "), e.note]);
+                 e.duration_s, e.was, (e.strength || "").slice(0, 1), e.remember, e.recovery,
+                 (e.feel || []).join("; "), (e.triggers || []).join("; "), (e.meds || []).join("; "), e.note]);
+    });
+    sharedDiary().forEach(e => {
+      const d = new Date(e.time);
+      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), "Diary", "", "", "", "", "", "", "",
+                 "mood " + (e.mood || "") + "; sleep " + (e.sleep ?? "") + " h; stress " + (e.stress || ""), "",
+                 e.med || "", e.text]);
     });
     const csv = "\ufeff" + rows.map(r => r.map(q).join(",")).join("\r\n");   // BOM so Excel reads it correctly
     const name = "beside-report-" + new Date().toLocaleDateString("en-CA") + ".csv";
