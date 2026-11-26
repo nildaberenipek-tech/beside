@@ -27,7 +27,7 @@ from download_data import PREFIX, fetch, list_keys
 warnings.filterwarnings("ignore")
 CFG = json.load(open("configs/default.json"))
 WIN, STEP = CFG["window_s"], CFG["step_s"]
-OUT = "data/features"
+OUT = "data/features_v2"
 
 
 def read_channels(path, labels):
@@ -44,21 +44,45 @@ def read_channels(path, labels):
 
 
 def motion_window_features(acc, fs, n_win):
-    """acc: 3 x N array of one accelerometer. Returns dict of arrays, one value per window."""
+    """acc: 3 x N array of one accelerometer. Returns dict of arrays, one value per window.
+
+    std, band/low power, line length : how much the body moves
+    peak_ratio : share of 1-12 Hz power in the strongest frequency (+-0.5 Hz); rhythmic jerking is high
+    dom_freq   : that strongest frequency (Hz)
+    tilt       : angle (deg) between the sensor's mean gravity direction and its z axis; lying vs upright
+    """
     mag = np.sqrt((acc ** 2).sum(axis=0))
     band = sosfiltfilt(butter(4, CFG["motion_band_hz"], btype="band", fs=fs, output="sos"), mag)
     low = sosfiltfilt(butter(4, [0.3, 2], btype="band", fs=fs, output="sos"), mag)
     w, s = int(WIN * fs), int(STEP * fs)
-    feats = {k: np.full(n_win, np.nan) for k in ["mot_std", "mot_band_pow", "mot_low_pow", "mot_line_len"]}
+    names = ["mot_std", "mot_band_pow", "mot_low_pow", "mot_line_len", "mot_peak_ratio", "mot_dom_freq", "mot_tilt"]
+    feats = {k: np.full(n_win, np.nan) for k in names}
+    freqs = np.fft.rfftfreq(w, 1 / fs)
+    in_band = (freqs >= 1) & (freqs <= 12)
+    hann = np.hanning(w)
     for i in range(n_win):
         a, b = i * s, i * s + w
         if b > len(mag):
             break
         seg = mag[a:b]
+        if not np.isfinite(seg).all():
+            continue
         feats["mot_std"][i] = seg.std()
         feats["mot_band_pow"][i] = np.mean(band[a:b] ** 2)
         feats["mot_low_pow"][i] = np.mean(low[a:b] ** 2)
         feats["mot_line_len"][i] = np.mean(np.abs(np.diff(seg)))
+        spec = np.abs(np.fft.rfft((seg - seg.mean()) * hann)) ** 2
+        sb = spec[in_band]
+        if sb.sum() > 0:
+            k = np.argmax(sb)
+            f0 = freqs[in_band][k]
+            near = in_band & (np.abs(freqs - f0) <= 0.5)
+            feats["mot_peak_ratio"][i] = spec[near].sum() / sb.sum()
+            feats["mot_dom_freq"][i] = f0
+        g = acc[:, a:b].mean(axis=1)
+        n = np.linalg.norm(g)
+        if n > 0:
+            feats["mot_tilt"][i] = np.degrees(np.arccos(np.clip(g[2] / n, -1, 1)))
     return feats
 
 
