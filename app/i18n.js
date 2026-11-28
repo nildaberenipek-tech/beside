@@ -1,147 +1,178 @@
-/* Beside translations. Keys are the English text; add a new language by adding another table.
-   Stored data (log, diary) is always kept in English and translated only for display. */
+/* Beside translations. Keys are the English text. To add a language, add another table to TABLES.
+   Stored data (log, diary) is kept in English and translated only for display. */
 (function (root) {
   "use strict";
 
   const TR = {
+    // splash
+    "Always beside you": "Hep yanında",
+
     // consent
     "Before we start": "Başlamadan önce",
-    "Beside watches over you at night and asks the people you choose to check on you. To do that it needs a few permissions. You can change your mind at any time in your phone settings.":
-      "Beside gece seni gözetir ve seçtiğin kişilerden seni kontrol etmelerini ister. Bunun için birkaç izne ihtiyacı var. Bu izinleri istediğin zaman telefonunun ayarlarından değiştirebilirsin.",
-    "Movement sensor": "Hareket sensörü",
-    "To notice the strong, rhythmic movements of a convulsive seizure while you sleep.": "Uyurken kasılmalı bir nöbetin güçlü ve ritmik hareketlerini fark etmek için.",
+    "At night, Beside watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.":
+      "Beside gece boyunca nöbetin güçlü hareketlerini izler ve seçtiğin kişilerin seni kontrol etmesini sağlar. Bunun için birkaç izne ihtiyacı var. İstersen bunları sonra telefonunun ayarlarından kapatabilirsin.",
+    "Motion": "Hareket",
+    "To notice the rhythmic jerking of a convulsive seizure while you sleep.": "Uyurken kasılmalı bir nöbetin ritmik sarsıntılarını fark etmek için.",
     "Location": "Konum",
-    "Only added to an emergency message, so your contacts know where to come.": "Sadece acil durum mesajına eklenir; yakınların nereye geleceğini bilsin diye.",
+    "Only sent in an emergency, so your people know where to come.": "Sadece acil durumda gönderilir, yakınların nereye geleceğini bilsin diye.",
     "Microphone": "Mikrofon",
-    "Only while aura listening is on, to hear your code word. Audio is not recorded or sent.": "Sadece aura dinleme açıkken, kod kelimeni duymak için. Ses kaydedilmez ve gönderilmez.",
-    "Your health log": "Sağlık günlüğün",
-    "Saved only on this phone. It leaves the phone only when you choose to share a report.": "Sadece bu telefonda saklanır. Telefondan yalnızca sen bir rapor paylaşmayı seçersen çıkar.",
+    "Only when you turn on listening for your code word. Nothing is recorded.": "Sadece kod kelimeni dinlemeyi açtığında. Hiçbir şey kaydedilmez.",
+    "Your log": "Kayıtların",
+    "Kept on this phone. It only leaves when you share a report.": "Bu telefonda kalır. Sadece sen bir rapor paylaşırsan dışarı çıkar.",
     "Beside is a research prototype, not a medical device.": "Beside bir araştırma prototipidir, tıbbi cihaz değildir.",
-    "It can miss seizures and it can raise false alarms. Keep following your doctor's safety advice.": "Nöbetleri kaçırabilir ve yanlış alarm verebilir. Doktorunun güvenlik önerilerine uymaya devam et.",
-    "I understand, allow": "Anladım, izin ver",
+    "It can miss seizures and it can raise false alarms. Keep following your doctor's advice.": "Nöbetleri kaçırabilir ve yanlış alarm verebilir. Doktorunun önerilerine uymaya devam et.",
+    "I understand, continue": "Anladım, devam et",
 
     // settings
     "Done": "Bitti",
     "Your safety plan": "Güvenlik planın",
-    "Stored only on this phone. Nothing is sent to a server.": "Sadece bu telefonda saklanır. Hiçbir şey bir sunucuya gönderilmez.",
+    "Saved on this phone only.": "Sadece bu telefonda saklanır.",
     "Language": "Dil",
+    "About you": "Senin hakkında",
+    "Your name": "Adın",
+    "Used in your emergency message": "Acil durum mesajında kullanılır",
+    "Home address (optional)": "Ev adresi (isteğe bağlı)",
+    "So help can find you": "Yardım seni bulabilsin diye",
     "From your doctor": "Doktorundan",
     "Seizure type": "Nöbet türü",
     "Tonic-clonic (including focal to bilateral)": "Tonik-klonik (fokalden iki taraflıya dönüşen dahil)",
     "Focal with movement": "Hareketli fokal",
     "Focal without movement": "Hareketsiz fokal",
-    "Typical seizure length (seconds)": "Tipik nöbet süresi (saniye)",
-    "If a seizure lasts longer than this, your contacts are told it is longer than usual.": "Bir nöbet bundan uzun sürerse, yakınlarına her zamankinden uzun sürdüğü söylenir.",
-    "Your doctor": "Doktorun",
+    "Usual seizure length (seconds)": "Nöbetlerin genelde kaç saniye sürüyor",
+    "Sound can trigger my seizures": "Nöbetlerim sesle tetiklenebiliyor",
+    "If ticked, Beside will not speak out loud during an alert.": "İşaretliyse Beside acil durumda sesli konuşmaz.",
+    "Doctor's name": "Doktorunun adı",
+    "Doctor's email for reports": "Raporlar için doktorunun e-postası",
+    "Your doctor only gets the reports you share. Emergency alerts go to your people, because a doctor may not see a message at night.":
+      "Doktoruna sadece senin paylaştığın raporlar gider. Acil uyarılar yakınlarına gider, çünkü doktor gece mesajı göremeyebilir.",
+    "People to contact": "Haber verilecek kişiler",
     "Name": "Ad",
-    "Email for reports": "Raporlar için e-posta",
-    "Your doctor gets a report only when you share it. Emergency messages go to the people below, not to your doctor, because a doctor may not see a message at night.":
-      "Doktoruna rapor sadece sen paylaştığında gider. Acil durum mesajları doktoruna değil aşağıdaki kişilere gider, çünkü doktor gece mesajı göremeyebilir.",
+    "Phone": "Telefon",
+    "Remove": "Sil",
+    "Add a person": "Kişi ekle",
+    "Message app": "Mesaj uygulaması",
+    "Emergency number": "Acil numara",
+    "Automatic alerts": "Otomatik uyarılar",
+    "Alert my people automatically": "Yakınlarıma otomatik haber ver",
+    "Uses the free ntfy app on their phone. No need to tap Send.": "Onların telefonundaki ücretsiz ntfy uygulamasını kullanır. Gönder'e basmak gerekmez.",
+    "On their phone, install": "Onların telefonuna",
+    "(App Store or Google Play).": "uygulamasını kur (App Store ya da Google Play).",
+    "Tap": "",
+    "and enter this family code:": "simgesine dokun ve bu aile kodunu yaz:",
+    "Send a test alert": "Deneme uyarısı gönder",
+    "Alerts pass through the ntfy.sh service. Anyone with the code can read them, so only share it with your people.":
+      "Uyarılar ntfy.sh servisinden geçer. Kodu bilen herkes okuyabilir, bu yüzden kodu sadece yakınlarınla paylaş.",
+    "Sending...": "Gönderiliyor...",
+    "Sent. Check their phone.": "Gönderildi. Onların telefonuna bak.",
+    "Could not send. Check the internet connection.": "Gönderilemedi. İnternet bağlantısını kontrol et.",
+    "Beside test": "Beside deneme",
+    "This is a test from Beside. If you can read it, alerts work.": "Bu Beside'dan bir deneme. Bunu okuyabiliyorsan uyarılar çalışıyor.",
+    "Timing": "Süreler",
+    "\"Are you OK?\" time after a possible seizure": "Olası nöbetten sonra \"İyi misin?\" süresi",
+    "\"Are you OK?\" time after an aura": "Auradan sonra \"İyi misin?\" süresi",
+    "10 seconds": "10 saniye", "15 seconds": "15 saniye", "20 seconds": "20 saniye", "30 seconds": "30 saniye",
+    "45 seconds": "45 saniye", "60 seconds": "60 saniye", "90 seconds": "90 saniye", "2 minutes": "2 dakika",
     "Aura": "Aura",
     "Your code word": "Kod kelimen",
-    "Say it when you feel an aura. It turns on high-attention mode; it never calls an ambulance by itself.": "Aura hissettiğinde bunu söyle. Yüksek dikkat modunu açar; kendi başına asla ambulans çağırmaz.",
-    "People to contact": "Haber verilecek kişiler",
-    "Add a person": "Kişi ekle",
-    "Phone": "Telefon",
-    "Remove": "Kaldır",
-    "Send my messages by": "Mesajlarımı şununla gönder",
-    "Beside writes the message and opens it for you; you tap Send. A website is not allowed to send messages on its own.":
-      "Beside mesajı yazar ve senin için açar; sen Gönder'e basarsın. Bir web sitesinin kendi başına mesaj göndermesine izin verilmez.",
-    "Automatic alert (optional)": "Otomatik uyarı (isteğe bağlı)",
-    "Send alerts automatically with ntfy": "Uyarıları ntfy ile otomatik gönder",
-    "On your contact's phone:": "Yakınının telefonunda:",
-    "Install the free": "Ücretsiz",
-    "app (App Store or Google Play).": "uygulamasını kur (App Store ya da Google Play).",
-    "Tap": "",
-    "(Subscribe to topic) and type this family code:": "simgesine (Subscribe to topic) dokun ve şu aile kodunu yaz:",
-    "Send a test alert": "Deneme uyarısı gönder",
-    "When this is on, Beside sends the alert by itself if nobody answers the check-in, and when you report an aura. Only the alert text and your location go through the ntfy.sh service; anyone who knows the code can read these alerts, so share it only with your contacts. SMS and WhatsApp buttons stay available as a backup.":
-      "Bu açıkken, kontrole kimse cevap vermezse ya da aura bildirirsen Beside uyarıyı kendisi gönderir. Sadece uyarı metni ve konumun ntfy.sh servisinden geçer; kodu bilen herkes bu uyarıları okuyabilir, bu yüzden kodu yalnızca yakınlarınla paylaş. SMS ve WhatsApp butonları yedek olarak kalır.",
-    "Comfort and light": "Rahatlık ve ışık",
-    "Beside never flashes or flickers. To soften flashing in other apps too, your iPhone has a built-in setting:": "Beside asla yanıp sönmez ve titremez. Diğer uygulamalardaki yanıp sönmeleri de yumuşatmak için iPhone'unda hazır bir ayar var:",
-    "Settings → Accessibility → Motion → Dim Flashing Lights": "Ayarlar → Erişilebilirlik → Hareket → Yanıp Sönen Işıkları Karart",
-    "Ask your doctor whether light sensitivity matters for your type of epilepsy.": "Işık hassasiyetinin senin epilepsi türün için önemli olup olmadığını doktoruna sor.",
+    "for example: lighthouse": "örneğin: deniz feneri",
+    "Say it when you feel an aura. It tells your people and starts a check-in. It never calls an ambulance on its own.":
+      "Aura hissettiğinde söyle. Yakınlarına haber verir ve kontrolü başlatır. Kendi başına asla ambulans çağırmaz.",
+    "Use it with the phone locked (Siri)": "Telefon kilitliyken kullan (Siri)",
+    "Open the": "",
+    "app, then tap": "uygulamasını aç, sonra",
+    "to make a new shortcut.": "simgesine dokunarak yeni bir kısayol oluştur.",
+    "Add": "Ekle:",
+    ". URL:": ". URL:",
+    ". Method: POST. Body: text \"Aura reported\".": ". Yöntem: POST. Gövde: \"Aura bildirildi\" metni.",
+    "to your contact with the text \"I feel an aura, please check on me\".": "ile yakınına \"Aura hissediyorum, lütfen beni kontrol et\" mesajı.",
+    "Name the shortcut with your code word, then try it: lock the phone and say \"Hey Siri,": "Kısayola kod kelimenin adını ver ve dene: telefonu kilitle ve \"Hey Siri,",
+    "your code word": "kod kelimen",
+    "Use it with the phone locked (Samsung and Android)": "Telefon kilitliyken kullan (Samsung ve Android)",
+    "Samsung: open": "Samsung:",
+    "or": "ya da",
+    "and make a routine started by a voice command.": "uygulamasını aç ve sesli komutla başlayan bir rutin oluştur.",
+    "Other Android phones: in the": "Diğer Android telefonlar:",
+    "app, create a routine with your code word.": "uygulamasında kod kelimenle bir rutin oluştur.",
+    "Make the routine send a message to your contact.": "Rutin yakınına bir mesaj göndersin.",
+    "Emergency buttons on your phone": "Telefonundaki acil durum tuşları",
+    "iPhone:": "iPhone:",
+    "Settings → Emergency SOS. Pressing the side button 5 times calls emergency services and texts your emergency contacts.":
+      "Ayarlar → Acil SOS. Yan tuşa 5 kez basınca acil servis aranır ve acil durum kişilerine mesaj gider.",
+    "Samsung:": "Samsung:",
+    "Settings → Safety and emergency → Emergency SOS. Pressing the side key several times sends your location to your contacts.":
+      "Ayarlar → Güvenlik ve acil durum → Acil SOS. Yan tuşa art arda basınca konumun kişilerine gönderilir.",
+    "Display": "Ekran",
+    "Calm display": "Sakin ekran",
+    "Dims the app and turns off all animation. Beside never flashes.": "Uygulamayı kısar ve tüm animasyonları kapatır. Beside asla yanıp sönmez.",
     "Save": "Kaydet",
     "Research prototype. Not a medical device.": "Araştırma prototipi. Tıbbi cihaz değildir.",
 
     // home
     "Settings": "Ayarlar",
-    "Good morning": "Günaydın",
-    "Good afternoon": "İyi günler",
-    "Good evening": "İyi akşamlar",
-    "Not watching right now": "Şu an izlemiyor",
-    "Watching over you": "Seni izliyor",
-    "Start sleep mode before you go to bed.": "Yatmadan önce uyku modunu başlat.",
-    "Add a contact in Settings.": "Ayarlar'dan bir kişi ekle.",
-    "Time for your monthly report": "Aylık rapor zamanı",
+    "Good morning": "Günaydın", "Good afternoon": "İyi günler", "Good evening": "İyi akşamlar",
+    "Sleep mode is off": "Uyku modu kapalı",
+    "Sleep mode is on": "Uyku modu açık",
+    "Add a person in Settings.": "Ayarlar'dan bir kişi ekle.",
+    "Monthly report": "Aylık rapor",
     "Share the last 30 days with your doctor.": "Son 30 günü doktorunla paylaş.",
     "Open report": "Raporu aç",
     "Start sleep mode": "Uyku modunu başlat",
     "I feel an aura": "Aura hissediyorum",
-    "Message my contact now": "Yakınıma hemen mesaj",
+    "Tell my people now": "Yakınlarıma hemen haber ver",
     "My diary": "Günlüğüm",
-    "Private notes, mood, sleep": "Özel notlar, ruh hali, uyku",
+    "Daily notes": "Günlük notlar",
     "Seizure log": "Nöbet kaydı",
-    "Every check-in and alert": "Tüm kontroller ve uyarılar",
-    "Report for my doctor": "Doktorum için rapor",
+    "Every alarm and check-in": "Tüm alarmlar ve kontroller",
+    "Doctor report": "Doktor raporu",
     "Summary and spreadsheet": "Özet ve tablo",
     "Real recording": "Gerçek kayıt",
-    "See how detection works": "Tespit nasıl çalışıyor",
-    "Practise the check-in": "Kontrolü dene",
-    "See what happens, nothing is sent": "Ne olduğunu gör, hiçbir şey gönderilmez",
+    "Watch a real seizure being detected": "Gerçek bir nöbetin yakalanışını izle",
+    "Practice": "Deneme",
+    "Try the check-in": "Kontrolü dene",
 
     // sleep
     "Watching quietly. Sleep well.": "Sessizce izliyor. İyi uykular.",
     "Movement": "Hareket",
-    "Keep the phone on the charger. The screen stays on but dark, because the phone stops web apps when it locks.": "Telefonu şarjda tut. Ekran açık ama karanlık kalır, çünkü telefon kilitlenince web uygulamalarını durdurur.",
-    "This browser cannot keep the screen on. Set Auto-Lock to Never while you sleep, and keep the phone on the charger.": "Bu tarayıcı ekranı açık tutamıyor. Uyurken Otomatik Kilit'i \"Hiçbir Zaman\" yap ve telefonu şarjda tut.",
-    "Seizure detection is on. It learns your normal movement during the first minutes.": "Nöbet tespiti açık. İlk dakikalarda senin normal hareketini öğrenir.",
-    "Detection model not loaded; only the demo button works.": "Tespit modeli yüklenemedi; sadece demo butonu çalışır.",
-    "Demo: simulate a seizure": "Demo: nöbet taklidi",
-    "Sensitive demo mode": "Hassas demo modu",
-    "For demonstrations only: alarms at a 50% score so shaking the phone can trigger it. In real use this would cause many false alarms.":
-      "Sadece gösterim için: %50 skorda alarm verir, böylece telefonu sallamak alarmı tetikleyebilir. Gerçek kullanımda çok sayıda yanlış alarma yol açar.",
+    "Keep the phone charging and the volume up. The screen stays on but dark.": "Telefonu şarjda tut ve sesini açık bırak. Ekran açık ama karanlık kalır.",
+    "This browser cannot keep the screen on. Set Auto-Lock to Never tonight and keep the phone charging.":
+      "Bu tarayıcı ekranı açık tutamıyor. Bu gece Otomatik Kilit'i \"Hiçbir Zaman\" yap ve telefonu şarjda tut.",
+    "Starting...": "Başlıyor...",
+    "The detection model did not load. Only the simulate button works.": "Tespit modeli yüklenemedi. Sadece taklit butonu çalışır.",
+    "Demo mode": "Demo modu",
+    "For showing the app: it alarms at a 50% score, so shaking the phone can set it off. Not for real use.":
+      "Uygulamayı göstermek için: %50 skorda alarm verir, böylece telefonu sallamak alarmı başlatabilir. Gerçek kullanım için değil.",
+    "Simulate a seizure": "Nöbet taklidi",
     "I'm awake, stop": "Uyandım, durdur",
 
-    // aura
-    "High-attention mode is on": "Yüksek dikkat modu açık",
-    "For the next 10 minutes, Beside reacts faster to movement.": "Önümüzdeki 10 dakika boyunca Beside harekete daha hızlı tepki verir.",
-    "We opened this message for you. Tap Send in your messaging app.": "Bu mesajı senin için açtık. Mesaj uygulamanda Gönder'e bas.",
-    "Your contacts were notified automatically. You can also send this message yourself:": "Yakınlarına otomatik olarak haber verildi. Bu mesajı kendin de gönderebilirsin:",
-    "I feel fine now": "Şimdi iyiyim",
-    "I just felt an aura. Beside is watching closely for the next 10 minutes. If you get another message, please check on me.":
-      "Az önce aura hissettim. Beside önümüzdeki 10 dakika beni yakından izliyor. Bir mesaj daha gelirse lütfen beni kontrol et.",
-
-    // countdown + alert
+    // aura, countdown, alert
+    "Aura reported": "Aura bildirildi",
     "Are you OK?": "İyi misin?",
-    "If you do not answer, your contacts will be asked to check on you.": "Cevap vermezsen yakınlarından seni kontrol etmeleri istenecek.",
+    "If you don't answer, your people will be alerted.": "Cevap vermezsen yakınlarına haber verilecek.",
+    "Your people know about the aura. Tap below if you are fine.": "Yakınların aurayı biliyor. İyiysen aşağıya dokun.",
     "I'm OK": "İyiyim",
-    "Asking for help": "Yardım isteniyor",
-    "No answer to the check-in. Send this to your contacts:": "Kontrole cevap verilmedi. Bunu yakınlarına gönder:",
-    "Your contacts were alerted automatically.": "Yakınlarına otomatik olarak haber verildi.",
-    "Automatic alert failed. Please use the buttons below.": "Otomatik uyarı gönderilemedi. Lütfen aşağıdaki butonları kullan.",
-    "It was a false alarm": "Yanlış alarmdı",
-    "Beside alert: possible seizure. No answer to the check-in at": "Beside uyarısı: olası nöbet. Şu saatteki kontrole cevap yok:",
-    "Location:": "Konum:",
+    "Beside: all OK": "Beside: her şey yolunda",
+    "Getting help": "Yardım isteniyor",
+    "Practice: this is what would happen": "Deneme: gerçekte bu olurdu",
+    "Message to your people": "Yakınlarına giden mesaj",
+    "If you call, you can say": "Ararsan şunu söyleyebilirsin",
+    "I'm OK, it was a false alarm": "İyiyim, yanlış alarmdı",
+    "Your people were alerted automatically.": "Yakınlarına otomatik olarak haber verildi.",
+    "Opening your message app...": "Mesaj uygulaman açılıyor...",
     "unknown": "bilinmiyor",
-    "Please call or check on me.": "Lütfen beni ara ya da yanıma gel.",
-    "Sending...": "Gönderiliyor...",
-    "Sent. Check your contact's phone.": "Gönderildi. Yakınının telefonuna bak.",
-    "Could not send. Check the internet connection.": "Gönderilemedi. İnternet bağlantısını kontrol et.",
 
     // log
     "Back": "Geri",
-    "Every check-in is saved here so you can show your doctor.": "Her kontrol burada kaydedilir, böylece doktoruna gösterebilirsin.",
+    "Every alarm and check-in, for you and your doctor.": "Senin ve doktorun için tüm alarmlar ve kontroller.",
     "Nothing yet.": "Henüz bir şey yok.",
-    "Aura reported": "Aura bildirildi",
     "Sleep mode": "Uyku modu",
     "Practice check-in": "Deneme kontrolü",
     "Check-in (demo)": "Kontrol (demo)",
-    "Possible seizure detected": "Olası nöbet tespit edildi",
+    "Possible seizure detected": "Olası nöbet algılandı",
     "no answer yet": "henüz cevap yok",
     "answered: I'm OK": "cevap: iyiyim",
-    "contacts alerted": "yakınlara haber verildi",
-    "false alarm (after alert)": "yanlış alarm (uyarıdan sonra)",
+    "people alerted": "yakınlara haber verildi",
+    "false alarm (after alert)": "yanlış alarm (haber verildikten sonra)",
+    "practice finished": "deneme tamamlandı",
     "answered after": "cevap süresi",
     "seizure?": "nöbet mi?",
     "strength": "şiddet",
@@ -150,88 +181,98 @@
     "felt:": "hissetti:",
     "medication:": "ilaç:",
     "before:": "öncesinde:",
-    "Alert": "Uyarı", "Night": "Gece", "Test": "Deneme", "OK": "Tamam",
+    "Alert": "Uyarı", "Night": "Gece", "OK": "Tamam",
 
     // aftercare
     "Skip": "Atla",
     "How are you feeling?": "Nasıl hissediyorsun?",
-    "Optional. Your answers go into your log for your doctor. Take your time.": "İsteğe bağlı. Cevapların doktorun için günlüğüne eklenir. Acele etme.",
+    "Only if you feel up to it. Your answers go into your log.": "Sadece kendini hazır hissedersen. Cevapların kaydına eklenir.",
     "Was it a seizure?": "Nöbet müydü?",
-    "How strong did it feel?": "Ne kadar şiddetli hissettirdi?",
+    "How strong was it?": "Ne kadar şiddetliydi?",
     "Do you remember it?": "Hatırlıyor musun?",
     "Right now I feel": "Şu an hissettiklerim",
     "Time until I felt like myself again": "Kendime gelmem ne kadar sürdü",
-    "Before this, there was": "Bundan önce şunlar vardı",
+    "Before it happened": "Olmadan önce",
     "My medication today": "Bugünkü ilaçlarım",
     "Anything else": "Başka bir şey",
-    "Save to my log": "Günlüğüme kaydet",
+    "For example: woke up on the floor": "Örneğin: yerde uyandım",
+    "Save to my log": "Kaydıma ekle",
     "I think so": "Sanırım evet", "No, false alarm": "Hayır, yanlış alarm", "Not sure": "Emin değilim",
     "1 mild": "1 hafif", "5 very strong": "5 çok şiddetli",
     "Yes": "Evet", "Partly": "Kısmen", "No": "Hayır",
-    "Fine": "İyi", "Tired": "Yorgun", "Headache": "Baş ağrısı", "Confused": "Kafam karışık", "Muscle pain": "Kas ağrısı",
-    "Bit my tongue": "Dilimi ısırdım", "Injured": "Yaralandım", "Wet the bed": "Altımı ıslattım", "Low mood": "Moralim bozuk",
+    "Fine": "İyiyim", "Tired": "Yorgun", "Sleepy": "Uykulu", "Headache": "Baş ağrısı", "Confused": "Kafam karışık",
+    "Memory gaps": "Hafıza boşlukları", "Trouble speaking": "Konuşmakta zorlanıyorum", "Muscle pain": "Kas ağrısı",
+    "Weak on one side": "Bir tarafım güçsüz", "Numbness or tingling": "Uyuşma ya da karıncalanma", "Dizzy": "Başım dönüyor",
+    "Nausea": "Mide bulantısı", "Blurred vision": "Bulanık görme", "Bit my tongue": "Dilimi ısırdım", "Injured": "Yaralandım",
+    "Wet the bed": "Altımı ıslattım", "Scared or anxious": "Korkmuş ya da kaygılı", "Low mood": "Moralim bozuk",
     "Under 15 min": "15 dakikadan az", "15-60 min": "15-60 dakika", "1-3 hours": "1-3 saat", "More than 3 hours": "3 saatten fazla", "Not yet": "Henüz değil",
-    "Missed medication": "İlacımı atladım", "Little sleep": "Az uyudum", "Alcohol": "Alkol",
-    "Ill or fever": "Hastalık ya da ateş", "Flashing lights": "Yanıp sönen ışıklar", "Period": "Regl",
-    "Taken on time": "Zamanında aldım", "Taken late": "Geç aldım", "Missed": "Atladım", "Rescue medicine used": "Kurtarma ilacı kullandım",
+    "Missed medication": "İlacımı atladım", "Little sleep": "Az uyudum", "Stress": "Stres", "Alcohol": "Alkol",
+    "Ill or fever": "Hastalık ya da ateş", "Flashing lights": "Yanıp sönen ışıklar", "Menstrual period": "Regl dönemi", "Skipped a meal": "Öğün atladım",
+    "Taken on time": "Zamanında aldım", "Taken late": "Geç aldım", "Missed": "Atladım", "Rescue medicine used": "Acil ilacımı kullandım",
 
     // diary
-    "Just for you. An entry goes into a doctor report only if you tick the box.": "Sadece senin için. Bir not, sadece kutuyu işaretlersen doktor raporuna girer.",
-    "Today I feel": "Bugün kendimi şöyle hissediyorum",
-    "Good": "İyi", "Okay": "Fena değil", "Low": "Düşük",
+    "Private. A note only goes to your doctor if you choose.": "Sadece senin için. Bir not, sadece sen istersen doktoruna gider.",
+    "+ New note": "+ Yeni not",
+    "in report": "raporda",
+    "stress": "stres",
+    "I feel": "Kendimi hissediyorum",
+    "Great": "Çok iyi", "Good": "İyi", "Okay": "Fena değil", "Low": "Moralsiz", "Anxious": "Kaygılı", "Irritable": "Sinirli", "Unwell": "İyi değilim",
     "Hours of sleep last night": "Dün gece kaç saat uyudun",
-    "Stress": "Stres", "Medium": "Orta", "High": "Yüksek",
-    "Medication": "İlaç", "All taken": "Hepsini aldım", "Some missed": "Bazılarını atladım", "All missed": "Hepsini atladım",
-    "Notes": "Notlar",
-    "Include in doctor report": "Doktor raporuna ekle",
-    "Save today's entry": "Bugünün notunu kaydet",
-    "Earlier entries": "Önceki notlar",
-    "No entries yet.": "Henüz not yok.",
-    "(no notes)": "(not yok)",
-    "Shared": "Paylaşılıyor", "Private": "Özel",
-    "mood": "ruh hali", "h sleep": "saat uyku", "stress": "stres",
+    "e.g. 7.5": "örn. 7.5",
+    "Medication": "İlaç",
+    "All taken": "Hepsini aldım", "Some missed": "Bazılarını atladım", "All missed": "Hepsini atladım",
+    "Note": "Not",
+    "Anything you want to remember about today": "Bugünle ilgili hatırlamak istediğin her şey",
+    "Add to doctor report": "Doktor raporuna ekle",
+    "Only feelings and stress": "Sadece his ve stres",
+    "Everything, including my note": "Notum dahil her şey",
+    "Delete": "Sil",
+    "No stress, calm": "Hiç stres yok, sakinim",
+    "Very slight": "Çok hafif",
+    "Slight, relaxed": "Hafif, rahatım",
+    "A little tense": "Biraz gerginim",
+    "Noticeably tense": "Fark edilir derecede gerginim",
+    "Moderate, coping": "Orta, idare ediyorum",
+    "Quite stressed": "Epey stresliyim",
+    "Very stressed": "Çok stresliyim",
+    "Hard to focus": "Odaklanmakta zorlanıyorum",
+    "Overwhelmed": "Bunaldım",
+    "Unbearable": "Dayanılmaz",
+    "Diary": "Günlük",
 
     // report
     "Report for your doctor": "Doktorun için rapor",
+    "Time range": "Zaman aralığı",
     "Last 7 days": "Son 7 gün", "Last 30 days": "Son 30 gün", "Last 90 days": "Son 90 gün",
-    "Download spreadsheet (opens in Excel)": "Tabloyu indir (Excel'de açılır)",
-    "Share with my doctor": "Doktorumla paylaş",
-    "Sharing opens your email or messaging app. You choose what to send; nothing is sent automatically. The spreadsheet lists every event; the summary above goes in the message.":
-      "Paylaşma, e-posta ya da mesaj uygulamanı açar. Neyin gönderileceğini sen seçersin; hiçbir şey otomatik gönderilmez. Tablo her olayı listeler; yukarıdaki özet mesaja eklenir.",
-    "possible seizures detected": "olası nöbet tespit edildi",
-    "times contacts were alerted": "kez yakınlara haber verildi",
+    "Download spreadsheet (Excel)": "Tabloyu indir (Excel)",
+    "Send to my doctor": "Doktoruma gönder",
+    "Opens your email or messages so you can check it before sending.": "Göndermeden önce kontrol edebilmen için e-postanı ya da mesajlarını açar.",
+    "possible seizure alarms": "olası nöbet alarmı",
+    "times people were alerted": "kez yakınlara haber verildi",
     "auras reported": "aura bildirildi",
     "hours watched at night": "saat gece izlendi",
 
     // replay
     "A real seizure, replayed": "Gerçek bir nöbet, yeniden oynatılıyor",
-    "Coming in the next version.": "Bir sonraki sürümde geliyor.",
-    "This screen will play back a real night recorded in a hospital (SeizeIT2 dataset), from a patient the model never saw during training. You will see the movement signal, the moment the seizure starts, and the moment Beside raises the alarm.":
-      "Bu ekran, hastanede kaydedilmiş gerçek bir geceyi (SeizeIT2 veri seti) yeniden oynatacak. Kayıt, modelin eğitim sırasında hiç görmediği bir hastaya ait. Hareket sinyalini, nöbetin başladığı anı ve Beside'ın alarm verdiği anı göreceksin.",
-
-    "Movement (chest sensor)": "Hareket (göğüs sensörü)",
-    "Seizure score and alarm threshold": "Nöbet skoru ve alarm eşiği",
-    "Press play. The recording plays 20 times faster than real time.": "Oynat'a bas. Kayıt gerçek zamandan 20 kat hızlı oynar.",
-    "Play": "Oynat", "Pause": "Duraklat", "Play again": "Tekrar oynat", "Speed": "Hız",
-    "Speed 20x": "Hız 20x",
-    "Shaded: the seizure as marked by clinicians from video-EEG. The detector is the same code and model that run on your phone; it learns this person's normal movement from the minutes before.":
-      "Gölgeli alan: doktorların video-EEG ile işaretlediği nöbet. Dedektör, telefonunda çalışan kodun ve modelin aynısıdır; bu kişinin normal hareketini önceki dakikalardan öğrenir.",
-    "Training patient: the model has seen this night during training, so this shows how the app behaves, not how accurate it is. Accuracy on unseen patients is reported in the README.":
-      "Eğitim hastası: model bu geceyi eğitimde gördü. Bu yüzden bu ekran uygulamanın nasıl davrandığını gösterir, ne kadar doğru olduğunu değil. Modelin hiç görmediği hastalardaki doğruluk README'de raporlanır.",
-    "Test patient: the model never saw this person during training.": "Test hastası: model bu kişiyi eğitimde hiç görmedi.",
+    "This is a real night recorded in a hospital. Press play to watch Beside's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Beside would raise the alarm.":
+      "Bu, hastanede kaydedilmiş gerçek bir gece. Oynat'a basınca Beside'ın dedektörünün, yani telefonunda çalışan kodun aynısının, bu geceyi nasıl izlediğini göreceksin. Nöbetin başladığı anı ve Beside'ın alarm vereceği anı göreceksin.",
+    "Movement (sensor on the chest)": "Hareket (göğüsteki sensör)",
+    "Seizure score (dashed line: alarm level)": "Nöbet skoru (kesikli çizgi: alarm seviyesi)",
+    "Press play. The night plays 20 times faster than real time.": "Oynat'a bas. Gece, gerçek zamandan 20 kat hızlı oynar.",
+    "Play": "Oynat", "Pause": "Duraklat", "Play again": "Tekrar oynat", "Speed": "Hız", "Speed 20x": "Hız 20x",
+    "Shaded area: the seizure, as marked by doctors from video and EEG.": "Gölgeli alan: doktorların video ve EEG'ye bakarak işaretlediği nöbet.",
+    "This patient was part of the training data, so this shows how the app behaves, not how accurate it is. Accuracy on new patients is in the README.":
+      "Bu hasta eğitim verisindeydi. Bu yüzden bu ekran uygulamanın nasıl davrandığını gösterir, ne kadar doğru olduğunu değil. Yeni hastalardaki doğruluk README'de.",
+    "The model never saw this patient during training.": "Model bu hastayı eğitimde hiç görmedi.",
     "Could not load the recording.": "Kayıt yüklenemedi.",
+    "A false alarm went off before the seizure.": "Nöbetten önce bir yanlış alarm çaldı.",
+    "The seizure has started. The detector is watching...": "Nöbet başladı. Dedektör izliyor...",
 
-    // placeholders
-    "Dr. ...": "Dr. ...",
-    "for example: lighthouse": "örneğin: deniz feneri",
-    "For example: woke up on the floor, felt different from usual": "Örneğin: yerde uyandım, her zamankinden farklı hissettim",
-    "e.g. 7.5": "örn. 7.5",
-    "Anything you want to remember about today": "Bugünle ilgili hatırlamak istediğin her şey"
+    "Dr. ...": "Dr. ..."
   };
 
   const TABLES = { tr: TR };
   let lang = "en";
-
   function t(s) {
     const table = TABLES[lang];
     return table && Object.prototype.hasOwnProperty.call(table, s) ? table[s] : s;
@@ -240,7 +281,7 @@
   function getLang() { return lang; }
   function detectLang() { return (navigator.language || "en").toLowerCase().startsWith("tr") ? "tr" : "en"; }
 
-  // translate every static text node and placeholder; the English original is remembered on the node
+  // translate static text nodes and placeholders; the English original is remembered on each node
   function translateDOM(rootEl) {
     const w = document.createTreeWalker(rootEl || document.body, NodeFilter.SHOW_TEXT);
     let n;
@@ -259,6 +300,22 @@
       e.placeholder = t(e.dataset.enPh);
     });
   }
+  // for tests: which visible English strings have no translation
+  function missing(l) {
+    const table = TABLES[l] || {}, out = new Set(), values = new Set(Object.values(table));
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) {
+      const tag = n.parentElement && n.parentElement.tagName;
+      if (tag === "SCRIPT" || tag === "STYLE") continue;
+      const s = n._en !== undefined ? n._en : n.nodeValue.trim();
+      const shown = n.nodeValue.trim();
+      // untranslated = still showing an English source text that has no entry in the table
+      if (s && shown === s && !(s in table) && !values.has(s) && /[a-z]{3}/i.test(s)) out.add(s);
+    }
+    document.querySelectorAll("[placeholder]").forEach(e => { const s = e.dataset.enPh || e.placeholder; if (s && !(s in table) && !values.has(s)) out.add(s); });
+    return [...out];
+  }
 
-  root.i18n = { t, setLang, getLang, detectLang, translateDOM, languages: { en: "English", tr: "Türkçe" } };
+  root.i18n = { t, setLang, getLang, detectLang, translateDOM, missing };
 })(window);

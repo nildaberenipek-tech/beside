@@ -6,20 +6,11 @@
   <meta name="theme-color" content="#f4f7f6">
   <title>Beside</title>
   <style>
-    /* ---------- Design tokens: change colours and sizes here, everything else follows ---------- */
+    /* ---------- Design tokens: change colours and sizes here ---------- */
     :root {
-      --bg: #f4f7f6;          /* page background: soft, slightly green-grey */
-      --surface: #ffffff;     /* cards */
-      --ink: #1d2b2a;         /* main text */
-      --muted: #5e706e;       /* secondary text */
-      --line: #dfe7e5;        /* borders */
-      --primary: #2f7d74;     /* calm teal: main actions */
-      --primary-ink: #ffffff;
-      --primary-soft: #e3f1ee;
-      --warn: #b4690e;        /* aura / attention */
-      --warn-soft: #fdf1e2;
-      --danger: #c0392b;      /* emergency only */
-      --danger-soft: #fbe9e7;
+      --bg: #f4f7f6; --surface: #ffffff; --ink: #1d2b2a; --muted: #5e706e; --line: #dfe7e5;
+      --primary: #2f7d74; --primary-ink: #ffffff; --primary-soft: #e3f1ee;
+      --warn: #b4690e; --warn-soft: #fdf1e2; --danger: #c0392b; --danger-soft: #fbe9e7;
       --radius: 18px;
       --shadow: 0 1px 2px rgba(29, 43, 42, .06), 0 4px 16px rgba(29, 43, 42, .06);
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -28,148 +19,183 @@
       :root {
         --bg: #0f1716; --surface: #172221; --ink: #e8efee; --muted: #9db0ad; --line: #26403c;
         --primary: #5fb3a8; --primary-ink: #0f1716; --primary-soft: #1c3431;
-        --warn: #e9a24a; --warn-soft: #33281a; --danger: #ef7568; --danger-soft: #3a1f1c;
-        --shadow: none;
+        --warn: #e9a24a; --warn-soft: #33281a; --danger: #ef7568; --danger-soft: #3a1f1c; --shadow: none;
       }
     }
-
-    /* ---------- Base ---------- */
     * { box-sizing: border-box; }
     body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink);
            font-size: 17px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    /* calm display: dimmer, no animation (set in Settings) */
+    body.calm { filter: brightness(.82) saturate(.85); }
+    body.calm *, body.calm *::before, body.calm *::after { animation: none !important; transition: none !important; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
     section { display: none; padding: 20px 16px 32px; max-width: 480px; margin: 0 auto; min-height: 100vh; }
     section.active { display: block; }
     h1 { font-size: 26px; line-height: 1.2; margin: 8px 0 4px; letter-spacing: -0.01em; }
-    h2 { font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase;
-         letter-spacing: .06em; margin: 28px 0 10px; }
-    p  { margin: 6px 0; }
+    h2 { font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 28px 0 10px; }
+    p { margin: 6px 0; }
     .muted { color: var(--muted); }
     .small { font-size: 14px; }
+    .hint { font-size: 13px; color: var(--muted); margin-top: 6px; }
 
-    /* ---------- Top bar ---------- */
     .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .brand { font-weight: 700; font-size: 20px; color: var(--primary); letter-spacing: -0.01em; }
-    .link { background: none; border: 0; color: var(--primary); font-size: 16px; font-weight: 600;
-            padding: 8px 0; cursor: pointer; font-family: inherit; }
+    .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 20px; color: var(--primary); }
+    .link { background: none; border: 0; color: var(--primary); font-size: 16px; font-weight: 600; padding: 8px 0; cursor: pointer; font-family: inherit; }
 
-    /* ---------- Cards ---------- */
-    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-            padding: 18px; box-shadow: var(--shadow); margin: 12px 0; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin: 12px 0; }
     .status { display: flex; align-items: center; gap: 12px; }
     .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
     .dot.on { background: var(--primary); box-shadow: 0 0 0 6px var(--primary-soft); }
 
-    /* ---------- Buttons ---------- */
-    .btn { display: block; width: 100%; min-height: 56px; padding: 16px 18px; margin: 10px 0;
-           border-radius: 14px; border: 1px solid transparent; font: 600 18px/1.2 var(--font);
-           cursor: pointer; text-align: center; }
+    .btn { display: block; width: 100%; min-height: 56px; padding: 16px 18px; margin: 10px 0; border-radius: 14px;
+           border: 1px solid transparent; font: 600 18px/1.2 var(--font); cursor: pointer; text-align: center; text-decoration: none; }
     .btn-primary { background: var(--primary); color: var(--primary-ink); }
     .btn-soft { background: var(--surface); color: var(--ink); border-color: var(--line); }
-    .btn-warn { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+    .btn-warn { background: var(--warn-soft); color: var(--warn); }
     .btn-danger { background: var(--danger); color: #fff; }
-    .btn-huge { min-height: 96px; font-size: 26px; border-radius: 22px; }
+    .btn-huge { min-height: 96px; font-size: 26px; border-radius: 22px; display: flex; align-items: center; justify-content: center; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .grid .btn { margin: 0; min-height: 88px; text-align: left; font-size: 16px; }
     .grid .btn span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-    /* ---------- Forms ---------- */
     label { display: block; font-size: 15px; font-weight: 600; margin: 16px 0 6px; }
     .card > label:first-child { margin-top: 0; }
-    .hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
-    input, select { width: 100%; min-height: 50px; padding: 12px 14px; font: 17px var(--font);
-                    color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-    input:focus, select:focus { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
+    input, select, textarea { width: 100%; min-height: 50px; padding: 12px 14px; font: 17px var(--font); color: var(--ink);
+                              background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+    textarea { min-height: 120px; font-size: 16px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
+    input[type=range] { padding: 0; min-height: 40px; border: 0; background: none; accent-color: var(--primary); }
     .contact { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; margin: 8px 0; }
-    .remove { min-height: 50px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line);
-              background: var(--surface); color: var(--danger); font: 600 15px var(--font); cursor: pointer; }
+    .remove { min-height: 50px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+              color: var(--danger); font: 600 15px var(--font); cursor: pointer; }
+    details { margin-top: 10px; }
+    summary { cursor: pointer; font-weight: 600; color: var(--primary); font-size: 15px; }
+    ol.steps { margin: 8px 0 0 18px; padding: 0; font-size: 14px; }
+    ol.steps li { margin: 4px 0; }
 
-    /* ---------- Sleep mode: dark and quiet whatever the phone theme ---------- */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { position: relative; margin: 0; font-weight: 400; }
+    .chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; min-height: 0; }
+    .chip span { display: inline-block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 15px; }
+    .chip input:checked + span { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+    .chip input:focus-visible + span { outline: 3px solid var(--primary-soft); }
+    .switch { display: flex; align-items: center; gap: 12px; margin: 0; font-weight: 600; cursor: pointer; }
+    .switch input { width: 24px; height: 24px; min-height: 0; accent-color: var(--primary); flex: none; }
+
+    /* splash */
+    #splash { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: flex; align-items: center; justify-content: center;
+              transition: opacity .5s ease; }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    #splash .mark { animation: grow 0.9s cubic-bezier(.2, .8, .2, 1) both; }
+    #splash .words { margin-left: 14px; animation: slide 0.8s .35s cubic-bezier(.2, .8, .2, 1) both; }
+    #splash .name { font-size: 40px; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; line-height: 1; }
+    #splash .slogan { font-size: 16px; color: var(--muted); margin-top: 6px; }
+    @keyframes grow { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes slide { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* sleep mode: dark and quiet whatever the phone theme */
     #sleep.active { background: #0b1211; color: #cfdedb; max-width: none; }
-    #sleep .inner { max-width: 480px; margin: 0 auto; text-align: center; padding-top: 12vh; }
+    #sleep .inner { max-width: 480px; margin: 0 auto; text-align: center; padding-top: 10vh; }
     #sleep .clock { font-size: 64px; font-weight: 300; letter-spacing: -0.02em; }
     .bar { height: 8px; background: #1e2b29; border-radius: 4px; overflow: hidden; margin: 28px 0 8px; }
     .bar > div { height: 100%; width: 0; background: #5fb3a8; transition: width .2s; }
     #sleep .btn-soft { background: transparent; color: #9db0ad; border-color: #26403c; }
+    #sleep .note { font-size: 14px; color: #6f8784; margin: 6px 0; }
+    #sleep .chip span { background: transparent; border-color: #26403c; color: #9db0ad; }
+    #sleep .chip input:checked + span { background: #1c3431; border-color: #5fb3a8; color: #5fb3a8; }
 
-    /* ---------- Countdown ---------- */
     #countdown.active { background: var(--warn-soft); text-align: center; }
     .ring { width: 220px; height: 220px; margin: 24px auto; position: relative; }
     .ring svg { transform: rotate(-90deg); }
-    .ring .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-                 font-size: 72px; font-weight: 700; color: var(--warn); }
+    .ring .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 72px; font-weight: 700; color: var(--warn); }
 
-    /* ---------- Alert ---------- */
     #alert.active { background: var(--danger-soft); }
-    .message { background: var(--surface); border-radius: 14px; padding: 14px; font-size: 15px;
-               border: 1px solid var(--line); white-space: pre-wrap; }
+    .message { background: var(--surface); border-radius: 14px; padding: 14px; font-size: 15px; border: 1px solid var(--line); white-space: pre-wrap; }
 
-    /* ---------- Log ---------- */
     .log-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .log-item:last-child { border-bottom: 0; }
     .tag { align-self: flex-start; font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); white-space: nowrap; }
     .tag.alert { background: var(--danger-soft); color: var(--danger); }
 
-    /* ---------- Choice chips (aftercare form) ---------- */
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { position: relative; margin: 0; font-weight: 400; }
-    .chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-    .chip span { display: inline-block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line);
-                 background: var(--surface); font-size: 15px; }
-    .chip input:checked + span { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
-    .chip input:focus-visible + span { outline: 3px solid var(--primary-soft); }
-    textarea { width: 100%; min-height: 90px; padding: 12px 14px; font: 16px var(--font); color: var(--ink);
-               background: var(--surface); border: 1px solid var(--line); border-radius: 12px; resize: vertical; }
-
-    /* ---------- Consent ---------- */
     .perm { display: grid; grid-template-columns: 10px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .perm:last-child { border-bottom: 0; }
     .perm .bullet { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 7px; }
 
-    /* ---------- Report ---------- */
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
     .stat .n { font-size: 30px; font-weight: 700; }
     .stat .l { font-size: 13px; color: var(--muted); }
     .banner { background: var(--primary-soft); border-radius: 14px; padding: 14px; margin: 12px 0; display: none; }
     .banner.show { display: block; }
-    .banner .link { padding: 4px 0 0; }
+
+    /* diary cards */
+    .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .note-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; min-height: 120px;
+                 text-align: left; font: inherit; color: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+    .note-card .d { font-weight: 700; font-size: 14px; }
+    .note-card .m { font-size: 12px; color: var(--muted); }
+    .note-card .t { font-size: 13px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+    .note-card.new { align-items: center; justify-content: center; color: var(--primary); font-weight: 600; border-style: dashed; }
+    .stress-label { font-weight: 600; color: var(--primary); min-height: 22px; }
 
     footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 28px; }
   </style>
 </head>
 <body>
 
-<!-- 0. Consent: shown once, on first launch -->
+<!-- Splash -->
+<div id="splash" aria-hidden="true">
+  <svg class="mark" width="76" height="76" viewBox="0 0 76 76">
+    <!-- placeholder mark (final logo by the design teammate): the night, and someone beside you -->
+    <path d="M44 10 A28 28 0 1 0 66 50 A22 22 0 1 1 44 10 Z" fill="var(--primary)"/>
+    <circle cx="58" cy="22" r="6" fill="var(--primary)"/>
+  </svg>
+  <div class="words">
+    <div class="name">Beside</div>
+    <div class="slogan" id="slogan">Always beside you</div>
+  </div>
+</div>
+
+<!-- Consent, shown once -->
 <section id="consent">
   <div class="topbar"><div class="brand">Beside</div></div>
   <h1>Before we start</h1>
-  <p class="muted">Beside watches over you at night and asks the people you choose to check on you. To do that it needs a few permissions. You can change your mind at any time in your phone settings.</p>
+  <p class="muted">At night, Beside watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.</p>
   <div class="card">
-    <div class="perm"><div class="bullet"></div><div><strong>Movement sensor</strong><div class="small muted">To notice the strong, rhythmic movements of a convulsive seizure while you sleep.</div></div></div>
-    <div class="perm"><div class="bullet"></div><div><strong>Location</strong><div class="small muted">Only added to an emergency message, so your contacts know where to come.</div></div></div>
-    <div class="perm"><div class="bullet"></div><div><strong>Microphone</strong><div class="small muted">Only while aura listening is on, to hear your code word. Audio is not recorded or sent.</div></div></div>
-    <div class="perm"><div class="bullet"></div><div><strong>Your health log</strong><div class="small muted">Saved only on this phone. It leaves the phone only when you choose to share a report.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Motion</strong><div class="small muted">To notice the rhythmic jerking of a convulsive seizure while you sleep.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Location</strong><div class="small muted">Only sent in an emergency, so your people know where to come.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Microphone</strong><div class="small muted">Only when you turn on listening for your code word. Nothing is recorded.</div></div></div>
+    <div class="perm"><div class="bullet"></div><div><strong>Your log</strong><div class="small muted">Kept on this phone. It only leaves when you share a report.</div></div></div>
   </div>
   <div class="card" style="background:var(--warn-soft);border-color:transparent">
     <strong>Beside is a research prototype, not a medical device.</strong>
-    <div class="small">It can miss seizures and it can raise false alarms. Keep following your doctor's safety advice.</div>
+    <div class="small">It can miss seizures and it can raise false alarms. Keep following your doctor's advice.</div>
   </div>
-  <button class="btn btn-primary" onclick="acceptConsent()">I understand, allow</button>
+  <button class="btn btn-primary" onclick="acceptConsent()">I understand, continue</button>
 </section>
 
-<!-- 1. Settings (also the first-run setup) -->
+<!-- Settings -->
 <section id="settings">
   <div class="topbar">
     <div class="brand">Beside</div>
-    <button class="link" id="settingsBack" onclick="show('home')">Done</button>
+    <button class="link" id="settingsBack" onclick="goHome()">Done</button>
   </div>
   <h1>Your safety plan</h1>
-  <p class="muted">Stored only on this phone. Nothing is sent to a server.</p>
+  <p class="muted">Saved on this phone only.</p>
   <label for="lang">Language</label>
   <select id="lang" onchange="changeLang(this.value)">
     <option value="en">English</option>
     <option value="tr">Türkçe</option>
   </select>
+
+  <h2>About you</h2>
+  <div class="card">
+    <label for="myName">Your name</label>
+    <input id="myName" autocomplete="name" placeholder="Used in your emergency message">
+    <label for="myAddress">Home address (optional)</label>
+    <input id="myAddress" autocomplete="street-address" placeholder="So help can find you">
+  </div>
 
   <h2>From your doctor</h2>
   <div class="card">
@@ -179,244 +205,263 @@
       <option value="focal-motor">Focal with movement</option>
       <option value="focal-nonmotor">Focal without movement</option>
     </select>
-    <label for="typicalS">Typical seizure length (seconds)</label>
+    <label for="typicalS">Usual seizure length (seconds)</label>
     <input id="typicalS" type="number" inputmode="numeric" min="5" max="600" value="90">
-    <p class="hint">If a seizure lasts longer than this, your contacts are told it is longer than usual.</p>
+    <label class="switch" style="margin-top:16px"><input type="checkbox" id="soundSensitive"><span>Sound can trigger my seizures</span></label>
+    <p class="hint">If ticked, Beside will not speak out loud during an alert.</p>
+    <label for="docName">Doctor's name</label>
+    <input id="docName" placeholder="Dr. ..." autocomplete="off">
+    <label for="docEmail">Doctor's email for reports</label>
+    <input id="docEmail" type="email" placeholder="doctor@hospital.org" autocomplete="off">
+    <p class="hint">Your doctor only gets the reports you share. Emergency alerts go to your people, because a doctor may not see a message at night.</p>
   </div>
 
-  <h2>Your doctor</h2>
+  <h2>People to contact</h2>
   <div class="card">
-    <label for="docName">Name</label>
-    <input id="docName" placeholder="Dr. ..." autocomplete="off">
-    <label for="docEmail">Email for reports</label>
-    <input id="docEmail" type="email" placeholder="doctor@hospital.org" autocomplete="off">
-    <p class="hint">Your doctor gets a report only when you share it. Emergency messages go to the people below, not to your doctor, because a doctor may not see a message at night.</p>
+    <div id="contacts"></div>
+    <button class="btn btn-soft" type="button" onclick="addContact()">Add a person</button>
+    <label for="channel">Message app</label>
+    <select id="channel">
+      <option value="sms">SMS</option>
+      <option value="wa">WhatsApp</option>
+    </select>
+    <label for="emergencyNo">Emergency number</label>
+    <input id="emergencyNo" type="tel" value="112">
+  </div>
+
+  <h2>Automatic alerts</h2>
+  <div class="card">
+    <label class="switch"><input type="checkbox" id="ntfyOn" onchange="renderNtfy()"><span>Alert my people automatically</span></label>
+    <p class="hint">Uses the free ntfy app on their phone. No need to tap Send.</p>
+    <div id="ntfyBox" style="display:none">
+      <ol class="steps">
+        <li>On their phone, install <strong>ntfy</strong> (App Store or Google Play).</li>
+        <li>Tap <strong>+</strong> and enter this family code:</li>
+      </ol>
+      <div class="message" id="ntfyCode" style="font-size:20px;font-weight:700;text-align:center;margin:10px 0;user-select:all"></div>
+      <button class="btn btn-soft" type="button" onclick="testNtfy()">Send a test alert</button>
+      <p class="hint" id="ntfyStatus"></p>
+      <p class="hint">Alerts pass through the ntfy.sh service. Anyone with the code can read them, so only share it with your people.</p>
+    </div>
+  </div>
+
+  <h2>Timing</h2>
+  <div class="card">
+    <label for="cdSec">"Are you OK?" time after a possible seizure</label>
+    <select id="cdSec">
+      <option value="10">10 seconds</option><option value="15">15 seconds</option>
+      <option value="20" selected>20 seconds</option><option value="30">30 seconds</option>
+      <option value="45">45 seconds</option><option value="60">60 seconds</option>
+    </select>
+    <label for="auraSec">"Are you OK?" time after an aura</label>
+    <select id="auraSec">
+      <option value="30">30 seconds</option><option value="60" selected>60 seconds</option>
+      <option value="90">90 seconds</option><option value="120">2 minutes</option>
+    </select>
   </div>
 
   <h2>Aura</h2>
   <div class="card">
     <label for="codeWord">Your code word</label>
     <input id="codeWord" placeholder="for example: lighthouse" autocomplete="off">
-    <p class="hint">Say it when you feel an aura. It turns on high-attention mode; it never calls an ambulance by itself.</p>
-  </div>
-
-  <h2>People to contact</h2>
-  <div class="card">
-    <div id="contacts"></div>
-    <button class="btn btn-soft" onclick="addContact()">Add a person</button>
-    <label for="channel">Send my messages by</label>
-    <select id="channel">
-      <option value="sms">SMS</option>
-      <option value="wa">WhatsApp</option>
-    </select>
-    <p class="hint">Beside writes the message and opens it for you; you tap Send. A website is not allowed to send messages on its own.</p>
-  </div>
-
-  <h2>Automatic alert (optional)</h2>
-  <div class="card">
-    <label class="chip"><input type="checkbox" id="ntfyOn" onchange="renderNtfy()"><span>Send alerts automatically with ntfy</span></label>
-    <div id="ntfyBox" style="display:none">
-      <p class="small" style="margin-top:12px">On your contact's phone:</p>
-      <ol class="small" style="margin:4px 0 0 18px;padding:0">
-        <li>Install the free <strong>ntfy</strong> app (App Store or Google Play).</li>
-        <li>Tap <strong>+</strong> (Subscribe to topic) and type this family code:</li>
+    <p class="hint">Say it when you feel an aura. It tells your people and starts a check-in. It never calls an ambulance on its own.</p>
+    <details>
+      <summary>Use it with the phone locked (Siri)</summary>
+      <ol class="steps">
+        <li>Open the <strong>Shortcuts</strong> app, then tap <strong>+</strong> to make a new shortcut.</li>
+        <li>Add <strong>Get Contents of URL</strong>. URL: <span class="ntfyUrl"></span>. Method: POST. Body: text "Aura reported".</li>
+        <li>Add <strong>Send Message</strong> to your contact with the text "I feel an aura, please check on me".</li>
+        <li>Name the shortcut with your code word, then try it: lock the phone and say "Hey Siri, <span class="cw">your code word</span>".</li>
       </ol>
-      <div class="message" id="ntfyCode" style="font-size:20px;font-weight:700;text-align:center;margin:10px 0;user-select:all"></div>
-      <button class="btn btn-soft" type="button" onclick="testNtfy()">Send a test alert</button>
-      <p class="hint" id="ntfyStatus"></p>
-      <p class="hint">When this is on, Beside sends the alert by itself if nobody answers the check-in, and when you report an aura. Only the alert text and your location go through the ntfy.sh service; anyone who knows the code can read these alerts, so share it only with your contacts. SMS and WhatsApp buttons stay available as a backup.</p>
-    </div>
+    </details>
+    <details>
+      <summary>Use it with the phone locked (Samsung and Android)</summary>
+      <ol class="steps">
+        <li>Samsung: open <strong>Bixby Routines</strong> or <strong>Modes and Routines</strong> and make a routine started by a voice command.</li>
+        <li>Other Android phones: in the <strong>Google Assistant</strong> app, create a routine with your code word.</li>
+        <li>Make the routine send a message to your contact.</li>
+      </ol>
+    </details>
   </div>
 
-  <h2>Comfort and light</h2>
+  <h2>Emergency buttons on your phone</h2>
   <div class="card">
-    <p class="small">Beside never flashes or flickers. To soften flashing in other apps too, your iPhone has a built-in setting:</p>
-    <p class="small"><strong>Settings &rarr; Accessibility &rarr; Motion &rarr; Dim Flashing Lights</strong></p>
-    <p class="hint">Ask your doctor whether light sensitivity matters for your type of epilepsy.</p>
+    <p class="small"><strong>iPhone:</strong> Settings &rarr; Emergency SOS. Pressing the side button 5 times calls emergency services and texts your emergency contacts.</p>
+    <p class="small"><strong>Samsung:</strong> Settings &rarr; Safety and emergency &rarr; Emergency SOS. Pressing the side key several times sends your location to your contacts.</p>
+  </div>
+
+  <h2>Display</h2>
+  <div class="card">
+    <label class="switch"><input type="checkbox" id="calm" onchange="applyCalm(this.checked)"><span>Calm display</span></label>
+    <p class="hint">Dims the app and turns off all animation. Beside never flashes.</p>
   </div>
 
   <button class="btn btn-primary" onclick="saveSettings()">Save</button>
   <footer>Research prototype. Not a medical device.</footer>
 </section>
 
-<!-- 2. Home -->
+<!-- Home -->
 <section id="home">
   <div class="topbar">
     <div class="brand">Beside</div>
     <button class="link" onclick="openSettings()">Settings</button>
   </div>
   <h1 id="greeting">Good evening</h1>
-
   <div class="card status">
     <div class="dot" id="statusDot"></div>
     <div>
-      <div id="statusText"><strong>Not watching right now</strong></div>
-      <div class="small muted" id="statusSub">Start sleep mode before you go to bed.</div>
+      <div id="statusText"><strong>Sleep mode is off</strong></div>
+      <div class="small muted" id="statusSub"></div>
     </div>
   </div>
-
   <div class="banner" id="reportBanner">
-    <strong>Time for your monthly report</strong>
+    <strong>Monthly report</strong>
     <div class="small">Share the last 30 days with your doctor.</div>
     <button class="link" onclick="openReport()">Open report</button>
   </div>
-
   <button class="btn btn-primary btn-huge" onclick="startSleep()">Start sleep mode</button>
-
   <div class="grid">
-    <button class="btn btn-warn" onclick="startAura()">I feel an aura<span>Message my contact now</span></button>
-    <button class="btn btn-soft" onclick="openDiary()">My diary<span>Private notes, mood, sleep</span></button>
-    <button class="btn btn-soft" onclick="openLog()">Seizure log<span>Every check-in and alert</span></button>
-    <button class="btn btn-soft" onclick="openReport()">Report for my doctor<span>Summary and spreadsheet</span></button>
-    <button class="btn btn-soft" onclick="openReplay()">Real recording<span>See how detection works</span></button>
-    <button class="btn btn-soft" onclick="startCountdown('test')">Practise the check-in<span>See what happens, nothing is sent</span></button>
+    <button class="btn btn-warn" onclick="startAura()">I feel an aura<span>Tell my people now</span></button>
+    <button class="btn btn-soft" onclick="openDiary()">My diary<span>Daily notes</span></button>
+    <button class="btn btn-soft" onclick="openLog()">Seizure log<span>Every alarm and check-in</span></button>
+    <button class="btn btn-soft" onclick="openReport()">Doctor report<span>Summary and spreadsheet</span></button>
+    <button class="btn btn-soft" onclick="openReplay()">Real recording<span>Watch a real seizure being detected</span></button>
+    <button class="btn btn-soft" onclick="startCountdown('test')">Practice<span>Try the check-in</span></button>
   </div>
   <footer>Research prototype. Not a medical device.</footer>
 </section>
 
-<!-- 3. Sleep mode -->
+<!-- Sleep mode -->
 <section id="sleep">
   <div class="inner">
     <div class="clock" id="clock">--:--</div>
     <p>Watching quietly. Sleep well.</p>
     <div class="bar"><div id="motionBar"></div></div>
-    <p class="small" style="color:#6f8784">Movement</p>
-    <p class="small" id="modelNote" style="color:#6f8784"></p>
-    <p class="small" id="wakeNote" style="color:#6f8784;margin-top:24px">Keep the phone on the charger. The screen stays on but dark, because the phone stops web apps when it locks.</p>
-    <label class="chip" style="margin-top:36px;display:inline-block"><input type="checkbox" id="demoSens"><span>Sensitive demo mode</span></label>
-    <p class="small" style="color:#6f8784">For demonstrations only: alarms at a 50% score so shaking the phone can trigger it. In real use this would cause many false alarms.</p>
-    <button class="btn btn-soft" style="margin-top:12px" onclick="startCountdown('demo')">Demo: simulate a seizure</button>
+    <p class="note">Movement</p>
+    <p class="note" id="modelNote"></p>
+    <p class="note" id="wakeNote" style="margin-top:20px">Keep the phone charging and the volume up. The screen stays on but dark.</p>
+    <label class="chip" style="margin-top:28px;display:inline-block"><input type="checkbox" id="demoSens"><span>Demo mode</span></label>
+    <p class="note">For showing the app: it alarms at a 50% score, so shaking the phone can set it off. Not for real use.</p>
+    <button class="btn btn-soft" style="margin-top:12px" onclick="startCountdown('demo')">Simulate a seizure</button>
     <button class="btn btn-soft" onclick="stopSleep()">I'm awake, stop</button>
   </div>
 </section>
 
-<!-- 4. Aura mode -->
-<section id="aura">
-  <div class="topbar"><div class="brand">Beside</div></div>
-  <div class="card" style="background:var(--warn-soft);border-color:transparent">
-    <h1 style="color:var(--warn)">High-attention mode is on</h1>
-    <p>For the next 10 minutes, Beside reacts faster to movement.</p>
-  </div>
-  <div class="card">
-    <p class="small muted">We opened this message for you. Tap Send in your messaging app.</p>
-    <div class="message" id="auraMsg"></div>
-    <div id="auraButtons"></div>
-  </div>
-  <button class="btn btn-primary" onclick="show('home')">I feel fine now</button>
-</section>
-
-<!-- 5. Are you OK? countdown -->
+<!-- Countdown -->
 <section id="countdown">
-  <h1 style="margin-top:24px">Are you OK?</h1>
-  <p class="muted">If you do not answer, your contacts will be asked to check on you.</p>
+  <h1 style="margin-top:24px" id="cdTitle">Are you OK?</h1>
+  <p class="muted" id="cdSub">If you don't answer, your people will be alerted.</p>
   <div class="ring">
     <svg width="220" height="220" viewBox="0 0 220 220">
       <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(180,105,14,.15)" stroke-width="12"/>
       <circle id="ringArc" cx="110" cy="110" r="100" fill="none" stroke="var(--warn)" stroke-width="12"
               stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="0"/>
     </svg>
-    <div class="num" id="seconds">30</div>
+    <div class="num" id="seconds">20</div>
   </div>
   <button class="btn btn-primary btn-huge" onclick="imOk()">I'm OK</button>
 </section>
 
-<!-- 6. Alert -->
+<!-- Alert -->
 <section id="alert">
   <div class="topbar"><div class="brand">Beside</div></div>
-  <h1 style="color:var(--danger)">Asking for help</h1>
-  <p>No answer to the check-in. Send this to your contacts:</p>
+  <h1 style="color:var(--danger)" id="alertTitle">Getting help</h1>
   <p id="alertAuto" style="font-weight:600"></p>
+  <a class="btn btn-danger btn-huge" id="callBtn" href="tel:112">Call 112</a>
   <div class="card">
+    <p class="small muted">Message to your people</p>
     <div class="message" id="alertText"></div>
   </div>
   <div id="alertButtons"></div>
-  <button class="btn btn-soft" onclick="imOk()">It was a false alarm</button>
+  <div class="card">
+    <p class="small muted">If you call, you can say</p>
+    <div class="message" id="callScript"></div>
+  </div>
+  <button class="btn btn-soft" onclick="imOk()">I'm OK, it was a false alarm</button>
 </section>
 
-<!-- 7. Log -->
+<!-- Log -->
 <section id="log">
   <div class="topbar">
     <div class="brand">Beside</div>
-    <button class="link" onclick="show('home')">Back</button>
+    <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>Seizure log</h1>
-  <p class="muted">Every check-in is saved here so you can show your doctor.</p>
-  <button class="btn btn-primary" onclick="openReport()">Report for my doctor</button>
+  <p class="muted">Every alarm and check-in, for you and your doctor.</p>
   <div class="card" id="logList"></div>
 </section>
 
-<!-- 7b. Aftercare: optional, after a real check-in -->
+<!-- Aftercare -->
 <section id="aftercare">
   <div class="topbar">
     <div class="brand">Beside</div>
     <button class="link" onclick="finishAftercare(false)">Skip</button>
   </div>
   <h1>How are you feeling?</h1>
-  <p class="muted">Optional. Your answers go into your log for your doctor. Take your time.</p>
-
+  <p class="muted">Only if you feel up to it. Your answers go into your log.</p>
   <h2>Was it a seizure?</h2>
   <div class="card chips" id="wasChips"></div>
-
-  <h2>How strong did it feel?</h2>
+  <h2>How strong was it?</h2>
   <div class="card chips" id="strengthChips"></div>
-
   <h2>Do you remember it?</h2>
   <div class="card chips" id="rememberChips"></div>
-
   <h2>Right now I feel</h2>
   <div class="card chips" id="feelChips"></div>
-
   <h2>Time until I felt like myself again</h2>
   <div class="card chips" id="recoveryChips"></div>
-
-  <h2>Before this, there was</h2>
+  <h2>Before it happened</h2>
   <div class="card chips" id="triggerChips"></div>
-
   <h2>My medication today</h2>
   <div class="card chips" id="medChips"></div>
-
   <h2>Anything else</h2>
-  <textarea id="afterNote" placeholder="For example: woke up on the floor, felt different from usual"></textarea>
-
+  <textarea id="afterNote" placeholder="For example: woke up on the floor"></textarea>
   <button class="btn btn-primary" onclick="finishAftercare(true)">Save to my log</button>
 </section>
 
-<!-- 7d. Diary: private daily notes -->
+<!-- Diary: list of notes -->
 <section id="diary">
   <div class="topbar">
     <div class="brand">Beside</div>
     <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>My diary</h1>
-  <p class="muted">Just for you. An entry goes into a doctor report only if you tick the box.</p>
-
-  <div class="card">
-    <label>Today I feel</label>
-    <div class="chips" id="moodChips"></div>
-    <label for="dSleep">Hours of sleep last night</label>
-    <input id="dSleep" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="e.g. 7.5">
-    <label>Stress</label>
-    <div class="chips" id="stressChips"></div>
-    <label>Medication</label>
-    <div class="chips" id="dMedChips"></div>
-    <label for="dText">Notes</label>
-    <textarea id="dText" placeholder="Anything you want to remember about today"></textarea>
-    <label class="chip" style="margin-top:12px"><input type="checkbox" id="dShare"><span>Include in doctor report</span></label>
-    <button class="btn btn-primary" onclick="saveDiary()">Save today's entry</button>
-  </div>
-
-  <h2>Earlier entries</h2>
-  <div class="card" id="diaryList"></div>
+  <p class="muted">Private. A note only goes to your doctor if you choose.</p>
+  <div class="notes" id="noteGrid"></div>
 </section>
 
-<!-- 7c. Report for the doctor -->
+<!-- Diary: one note -->
+<section id="note">
+  <div class="topbar">
+    <button class="link" onclick="openDiary()">Back</button>
+    <button class="link" id="noteDelete" onclick="deleteNote()" style="color:var(--danger)">Delete</button>
+  </div>
+  <h1 id="noteDate"></h1>
+  <div class="card">
+    <label>I feel</label>
+    <div class="chips" id="moodChips"></div>
+    <label for="stress">Stress</label>
+    <input type="range" id="stress" min="0" max="10" step="1" value="0" oninput="renderStress()">
+    <div class="stress-label" id="stressLabel"></div>
+    <label for="dSleep">Hours of sleep last night</label>
+    <input id="dSleep" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="e.g. 7.5">
+    <label>Medication</label>
+    <div class="chips" id="dMedChips"></div>
+    <label for="dText">Note</label>
+    <textarea id="dText" placeholder="Anything you want to remember about today"></textarea>
+    <label class="switch" style="margin-top:16px"><input type="checkbox" id="dShare" onchange="renderShare()"><span>Add to doctor report</span></label>
+    <div id="shareScope" class="chips" style="margin-top:10px;display:none"></div>
+  </div>
+  <button class="btn btn-primary" onclick="saveNote()">Save</button>
+</section>
+
+<!-- Report -->
 <section id="report">
   <div class="topbar">
     <div class="brand">Beside</div>
     <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>Report for your doctor</h1>
-  <label for="period">Period</label>
+  <label for="period">Time range</label>
   <select id="period" onchange="renderReport()">
     <option value="7">Last 7 days</option>
     <option value="30" selected>Last 30 days</option>
@@ -424,92 +469,107 @@
   </select>
   <div class="stats" style="margin-top:14px" id="stats"></div>
   <div class="card" id="reportText" style="white-space:pre-wrap;font-size:15px"></div>
-  <button class="btn btn-primary" onclick="downloadCsv()">Download spreadsheet (opens in Excel)</button>
-  <button class="btn btn-soft" onclick="shareReport()">Share with my doctor</button>
-  <p class="hint">Sharing opens your email or messaging app. You choose what to send; nothing is sent automatically. The spreadsheet lists every event; the summary above goes in the message.</p>
+  <button class="btn btn-primary" onclick="downloadCsv()">Download spreadsheet (Excel)</button>
+  <button class="btn btn-soft" onclick="shareReport()">Send to my doctor</button>
+  <p class="hint">Opens your email or messages so you can check it before sending.</p>
 </section>
 
-<!-- 8. Replay -->
+<!-- Replay -->
 <section id="replay">
   <div class="topbar">
     <div class="brand">Beside</div>
     <button class="link" onclick="stopReplay(); goHome()">Back</button>
   </div>
   <h1>A real seizure, replayed</h1>
-  <p class="muted small" id="rpSource"></p>
+  <p class="muted">This is a real night recorded in a hospital. Press play to watch Beside's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Beside would raise the alarm.</p>
+  <p class="small muted" id="rpSource"></p>
   <div class="card">
-    <div class="small muted">Movement (chest sensor)</div>
+    <div class="small muted">Movement (sensor on the chest)</div>
     <canvas id="rpMove" height="110" style="width:100%;display:block"></canvas>
-    <div class="small muted" style="margin-top:10px">Seizure score and alarm threshold</div>
+    <div class="small muted" style="margin-top:10px">Seizure score (dashed line: alarm level)</div>
     <canvas id="rpScore" height="110" style="width:100%;display:block"></canvas>
     <div class="small muted" style="display:flex;justify-content:space-between;margin-top:4px">
       <span id="rpClock">0:00</span><span id="rpEnd"></span>
     </div>
   </div>
-  <div class="card" id="rpStatus" style="font-weight:600">Press play. The recording plays 20 times faster than real time.</div>
+  <div class="card" id="rpStatus" style="font-weight:600">Press play. The night plays 20 times faster than real time.</div>
   <div class="grid">
     <button class="btn btn-primary" id="rpPlay" onclick="toggleReplay()">Play</button>
-    <button class="btn btn-soft" onclick="setReplaySpeed()"><span id="rpSpeed" style="display:inline;color:inherit;font-size:16px;margin:0">Speed 20x</span></button>
+    <button class="btn btn-soft" id="rpSpeed" onclick="setReplaySpeed()">Speed 20x</button>
   </div>
-  <p class="hint">Shaded: the seizure as marked by clinicians from video-EEG. The detector is the same code and model that run on your phone; it learns this person's normal movement from the minutes before.</p>
+  <p class="hint">Shaded area: the seizure, as marked by doctors from video and EEG.</p>
 </section>
 
 <script src="i18n.js"></script>
 <script src="detector.js"></script>
 <script>
   const T = s => i18n.t(s);
-  // ---------- detection model (trained in Python, see src/phone_model.py) ----------
+  const tr = () => i18n.getLang() === "tr";
+  const SLOGAN = "Always beside you";        // change the slogan here
+
+  // ---------- detection model (trained in Python, src/phone_model.py) ----------
   let MODEL = null, detector = null, highAttentionUntil = 0;
   fetch("model.json").then(r => r.json()).then(m => { MODEL = m; }).catch(() => {});
   function makeDetector() {
     if (!MODEL || !window.BesideDetector) return null;
     return new BesideDetector.Detector(MODEL, {
       onWindow: w => {
-        // more sensitive for 10 minutes after an aura
         detector.threshold = document.getElementById("demoSens").checked ? 0.5
           : Date.now() < highAttentionUntil ? MODEL.thresholds.high_attention : MODEL.thresholds.default;
         const learning = !Number.isFinite(w.features.rel_band);
-        const tr = i18n.getLang() === "tr";
         document.getElementById("modelNote").textContent = learning
-          ? (tr ? `Normal hareketini öğreniyor... (${detector.windows}/12)` : `Learning your normal movement... (${detector.windows}/12)`)
-          : (tr ? `İzliyor. Nöbet skoru ${(w.p * 100).toFixed(0)}% (alarm eşiği ${(detector.threshold * 100).toFixed(0)}%)`
-                : `Watching. Seizure score ${(w.p * 100).toFixed(0)}% (alarm at ${(detector.threshold * 100).toFixed(0)}%)`);
+          ? (tr() ? `Normal hareketini öğreniyor (${detector.windows}/12)` : `Learning your normal movement (${detector.windows}/12)`)
+          : (tr() ? `Nöbet skoru %${(w.p * 100).toFixed(0)}, alarm %${(detector.threshold * 100).toFixed(0)}'de`
+                  : `Seizure score ${(w.p * 100).toFixed(0)}%, alarm at ${(detector.threshold * 100).toFixed(0)}%`);
       },
-      onAlarm: () => { if (watching) startCountdown("detected"); }
+      onAlarm: () => { if (watching && !countingDown) startCountdown("detected"); }
     });
   }
 
-  // ---------- navigation: show exactly one <section> ----------
+  // ---------- navigation and storage ----------
   function show(id) {
     document.querySelectorAll("section").forEach(s => s.classList.toggle("active", s.id === id));
     i18n.translateDOM(document.getElementById(id));
     window.scrollTo(0, 0);
   }
-
-  // ---------- storage: everything stays on this phone ----------
-  function load(key, fallback) {
-    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; }
-  }
+  function load(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch (e) { return fallback; } }
   function store(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {} }
+  const profile = () => load("profile", {});
+  const timeNow = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  // ---------- consent ----------
+  async function acceptConsent() {
+    if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
+      try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
+    }
+    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(() => {}, () => {}, { timeout: 8000 });
+    store("consent", { time: new Date().toISOString(), version: 2 });
+    openSettings();
+  }
 
   // ---------- settings ----------
   function changeLang(l) {
     i18n.setLang(l);
-    const p = load("profile", {}); p.lang = l; store("profile", p);
+    const p = profile(); p.lang = l; store("profile", p);
     i18n.translateDOM(document.body);
   }
+  function applyCalm(on) { document.body.classList.toggle("calm", !!on); }
   function openSettings() {
-    const p = load("profile", {});
-    document.getElementById("lang").value = i18n.getLang();
-    document.getElementById("szType").value = p.szType || "tonic-clonic";
-    document.getElementById("typicalS").value = p.typicalS || 90;
-    document.getElementById("codeWord").value = p.codeWord || "";
-    document.getElementById("docName").value = p.docName || "";
-    document.getElementById("docEmail").value = p.docEmail || "";
-    document.getElementById("channel").value = p.channel || "sms";
+    const p = profile();
+    const set = (id, v) => { document.getElementById(id).value = v; };
+    set("lang", i18n.getLang());
+    set("myName", p.myName || ""); set("myAddress", p.myAddress || "");
+    set("szType", p.szType || "tonic-clonic"); set("typicalS", p.typicalS || 90);
+    document.getElementById("soundSensitive").checked = !!p.soundSensitive;
+    set("docName", p.docName || ""); set("docEmail", p.docEmail || "");
+    set("channel", p.channel || "sms"); set("emergencyNo", p.emergencyNo || "112");
+    set("cdSec", String(p.cdSec || 20)); set("auraSec", String(p.auraSec || 60));
+    set("codeWord", p.codeWord || "");
     document.getElementById("ntfyOn").checked = !!p.ntfyOn;
+    document.getElementById("calm").checked = !!p.calm;
     ntfyTopic = p.ntfyTopic || newTopic();
     renderNtfy();
+    document.querySelectorAll(".cw").forEach(e => e.textContent = p.codeWord || T("your code word"));
     const list = document.getElementById("contacts");
     list.innerHTML = "";
     (p.contacts && p.contacts.length ? p.contacts : [{ name: "", phone: "" }]).forEach(c => addContact(c));
@@ -528,52 +588,35 @@
     i18n.translateDOM(row);
   }
   function saveSettings() {
+    const v = id => document.getElementById(id).value.trim();
     const contacts = [...document.querySelectorAll("#contacts .contact")]
       .map(r => ({ name: r.querySelector(".c-name").value.trim(), phone: r.querySelector(".c-phone").value.trim() }))
       .filter(c => c.phone);
     store("profile", {
-      szType: document.getElementById("szType").value,
-      typicalS: Number(document.getElementById("typicalS").value) || 90,
-      codeWord: document.getElementById("codeWord").value.trim(),
-      docName: document.getElementById("docName").value.trim(),
-      docEmail: document.getElementById("docEmail").value.trim(),
-      channel: document.getElementById("channel").value,
-      lang: i18n.getLang(),
-      ntfyOn: document.getElementById("ntfyOn").checked,
-      ntfyTopic,
-      contacts
+      ...profile(), lang: i18n.getLang(), myName: v("myName"), myAddress: v("myAddress"),
+      szType: v("szType"), typicalS: Number(v("typicalS")) || 90,
+      soundSensitive: document.getElementById("soundSensitive").checked,
+      docName: v("docName"), docEmail: v("docEmail"), contacts, channel: v("channel"),
+      emergencyNo: v("emergencyNo") || "112", cdSec: Number(v("cdSec")) || 20, auraSec: Number(v("auraSec")) || 60,
+      codeWord: v("codeWord"), ntfyOn: document.getElementById("ntfyOn").checked, ntfyTopic,
+      calm: document.getElementById("calm").checked
     });
     goHome();
   }
 
-  // ---------- consent: once, on first launch ----------
-  async function acceptConsent() {
-    // iPhone only shows the motion prompt after a tap, so we ask here, inside the button press
-    if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
-      try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
-    }
-    if (navigator.geolocation) navigator.geolocation.getCurrentPosition(() => {}, () => {}, { timeout: 8000 });
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop());          // only asking; nothing is recorded
-    } catch (e) {}
-    store("consent", { time: new Date().toISOString(), version: 1 });
-    openSettings();
-  }
-
-  // ---------- ntfy: optional automatic alerts (free, no account) ----------
+  // ---------- ntfy: free automatic alerts ----------
   let ntfyTopic = "";
   function newTopic() {
-    const a = new Uint8Array(8);
-    crypto.getRandomValues(a);
+    const a = new Uint8Array(8); crypto.getRandomValues(a);
     return "beside-" + [...a].map(b => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("");
   }
   function renderNtfy() {
     document.getElementById("ntfyBox").style.display = document.getElementById("ntfyOn").checked ? "block" : "none";
     document.getElementById("ntfyCode").textContent = ntfyTopic;
+    document.querySelectorAll(".ntfyUrl").forEach(e => e.textContent = "https://ntfy.sh/" + ntfyTopic);
   }
   async function ntfySend(topic, title, message, priority, click) {
-    // JSON publish to the root URL without custom headers: a simple request, no CORS preflight
+    // JSON publish to the root URL, no custom headers: a simple request without CORS preflight
     const body = { topic, title, message, priority };
     if (click) body.click = click;
     const r = await fetch("https://ntfy.sh/", { method: "POST", body: JSON.stringify(body) });
@@ -583,203 +626,220 @@
     const st = document.getElementById("ntfyStatus");
     st.textContent = T("Sending...");
     try {
-      await ntfySend(ntfyTopic, "Beside test", "This is a test alert from Beside. If you see it, automatic alerts work.", 3);
-      st.textContent = T("Sent. Check your contact's phone.");
+      await ntfySend(ntfyTopic, T("Beside test"), T("This is a test from Beside. If you can read it, alerts work."), 3);
+      st.textContent = T("Sent. Check their phone.");
     } catch (e) { st.textContent = T("Could not send. Check the internet connection.") + " (" + e.message + ")"; }
   }
-  async function autoAlert(title, message, priority, click) {
-    const p = load("profile", {});
+  async function notify(title, message, priority, click) {
+    const p = profile();
     if (!p.ntfyOn || !p.ntfyTopic) return "off";
-    try { await ntfySend(p.ntfyTopic, title, message, priority, click); return "sent"; }
-    catch (e) { return "failed"; }
+    try { await ntfySend(p.ntfyTopic, title, message, priority, click); return "sent"; } catch (e) { return "failed"; }
+  }
+
+  // ---------- messages ----------
+  function contactsOrDemo() {
+    const c = profile().contacts;
+    return c && c.length ? c : [{ name: tr() ? "demo kişi" : "demo contact", phone: "+10000000000" }];
+  }
+  function openMessage(kind, text, phone = "") {
+    const digits = phone.replace(/[^0-9+]/g, "");
+    location.href = kind === "sms" ? "sms:" + digits + "?&body=" + encodeURIComponent(text)
+                                   : "https://wa.me/" + digits.replace("+", "") + "?text=" + encodeURIComponent(text);
+  }
+  function contactButtons(boxId, text, cls) {
+    const ch = profile().channel || "sms", box = document.getElementById(boxId);
+    box.innerHTML = "";
+    contactsOrDemo().forEach(c => [[ch, cls], [ch === "sms" ? "wa" : "sms", "btn-soft"]].forEach(([kind, k]) => {
+      const b = document.createElement("button");
+      b.className = "btn " + k;
+      b.textContent = (kind === "sms" ? "SMS " : "WhatsApp ") + (c.name || c.phone);
+      b.onclick = () => openMessage(kind, text, c.phone);
+      box.appendChild(b);
+    }));
+  }
+  function whoName() { return profile().myName || (tr() ? "Bu kişi" : "This person"); }
+
+  // ---------- speaking out loud in the room ----------
+  let speakTimer = null;
+  function speakLoop(text) {
+    stopSpeaking();
+    if (profile().soundSensitive || !("speechSynthesis" in window)) return;
+    const say = () => {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = tr() ? "tr-TR" : "en-US"; u.rate = 0.95; u.volume = 1;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    };
+    say(); speakTimer = setInterval(say, 15000);
+  }
+  function stopSpeaking() {
+    clearInterval(speakTimer); speakTimer = null;
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+  }
+  function roomText() {
+    const n = whoName(), no = profile().emergencyNo || "112";
+    return tr()
+      ? `Dikkat. ${n} nöbet geçiriyor olabilir. Onu yan yatırın. Ağzına hiçbir şey koymayın. Başının altına yumuşak bir şey koyun. ${no}'yi arayın.`
+      : `Attention. ${n} may be having a seizure. Turn them onto their side. Put nothing in their mouth. Put something soft under their head. Call ${no}.`;
   }
 
   // ---------- home ----------
   function goHome() {
+    const p = profile();
     const log = load("log", []);
     const since = load("lastReport", null) || (log.length ? log[log.length - 1].time : null);
-    document.getElementById("reportBanner").classList.toggle("show",
-      log.length > 0 && since && Date.now() - new Date(since) > 30 * 864e5);
+    document.getElementById("reportBanner").classList.toggle("show", log.length > 0 && since && Date.now() - new Date(since) > 30 * 864e5);
     const h = new Date().getHours();
-    document.getElementById("greeting").textContent =
-      T(h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening");
-    const n = load("profile", {}).contacts?.length || 0;
+    document.getElementById("greeting").textContent = T(h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening");
     if (!watching) {
-      document.getElementById("statusSub").textContent =
-        !n ? T("Add a contact in Settings.") : i18n.getLang() === "tr"
-          ? `${n} kişiden seni kontrol etmesi istenecek.`
-          : `${n} ${n === 1 ? "person" : "people"} will be asked to check on you.`;
+      const n = p.contacts?.length || 0;
+      document.getElementById("statusText").innerHTML = "<strong>" + T("Sleep mode is off") + "</strong>";
+      document.getElementById("statusSub").textContent = !n ? T("Add a person in Settings.")
+        : tr() ? `Bir şey olursa ${n} kişiye haber verilecek.` : `If something happens, ${n} ${n === 1 ? "person" : "people"} will be told.`;
     }
     show("home");
   }
 
   // ---------- sleep mode ----------
   let watching = false, clockTimer = null, sleepStartedAt = null, wakeLock = null;
-  // keep the screen on during sleep mode: a locked iPhone pauses web pages, which would stop detection
   async function keepAwake() {
-    try {
-      if ("wakeLock" in navigator) {
-        wakeLock = await navigator.wakeLock.request("screen");
-        return true;
-      }
-    } catch (e) {}
+    try { if ("wakeLock" in navigator) { wakeLock = await navigator.wakeLock.request("screen"); return true; } } catch (e) {}
     return false;
   }
-  document.addEventListener("visibilitychange", () => {
-    if (watching && document.visibilityState === "visible") keepAwake();
-  });
+  document.addEventListener("visibilitychange", () => { if (watching && document.visibilityState === "visible") keepAwake(); });
   async function startSleep() {
     if (typeof DeviceMotionEvent !== "undefined" && DeviceMotionEvent.requestPermission) {
       try { await DeviceMotionEvent.requestPermission(); } catch (e) {}
     }
     if (!watching) {
       detector = makeDetector();
+      sleepStartedAt = Date.now();
       window.addEventListener("devicemotion", onMotion);
     }
-    if (!watching) sleepStartedAt = Date.now();
     watching = true;
-    const since = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     document.getElementById("statusDot").classList.add("on");
-    document.getElementById("statusText").innerHTML = "<strong>" + T("Watching over you") + "</strong>";
-    document.getElementById("statusSub").textContent = (i18n.getLang() === "tr" ? "Başlangıç: " : "Since ") + since;
+    document.getElementById("statusText").innerHTML = "<strong>" + T("Sleep mode is on") + "</strong>";
+    document.getElementById("statusSub").textContent = (tr() ? "Başlangıç " : "Since ") + timeNow();
     tickClock(); clockTimer = setInterval(tickClock, 10000);
-    document.getElementById("modelNote").textContent = T(detector
-      ? "Seizure detection is on. It learns your normal movement during the first minutes."
-      : "Detection model not loaded; only the demo button works.");
-    const ok = await keepAwake();
-    if (!ok) document.getElementById("wakeNote").textContent = T(
-      "This browser cannot keep the screen on. Set Auto-Lock to Never while you sleep, and keep the phone on the charger.");
+    document.getElementById("modelNote").textContent = T(detector ? "Starting..." : "The detection model did not load. Only the simulate button works.");
+    if (!(await keepAwake())) document.getElementById("wakeNote").textContent =
+      T("This browser cannot keep the screen on. Set Auto-Lock to Never tonight and keep the phone charging.");
     show("sleep");
   }
   function stopSleep() {
-    if (watching && sleepStartedAt) {
-      addLog({ kind: "sleep", text: "Sleep mode", duration_s: Math.round((Date.now() - sleepStartedAt) / 1000) });
-    }
+    if (watching && sleepStartedAt) addLog({ kind: "sleep", text: "Sleep mode", duration_s: Math.round((Date.now() - sleepStartedAt) / 1000) });
     watching = false;
     if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
     window.removeEventListener("devicemotion", onMotion);
     clearInterval(clockTimer);
     document.getElementById("statusDot").classList.remove("on");
-    document.getElementById("statusText").innerHTML = "<strong>" + T("Not watching right now") + "</strong>";
     goHome();
   }
-  function tickClock() {
-    document.getElementById("clock").textContent =
-      new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
+  function tickClock() { document.getElementById("clock").textContent = timeNow(); }
   function onMotion(e) {
     const a = e.accelerationIncludingGravity;
-    if (!a || a.x === null) return;          // no real sensor (e.g. a laptop): ignore
+    if (!a || a.x === null) return;
     const mag = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
     document.getElementById("motionBar").style.width = Math.min(100, Math.abs(mag - 9.81) * 10) + "%";
     if (detector) detector.push(a.x, a.y, a.z, e.timeStamp || performance.now());
   }
 
-  // ---------- aura ----------
+  // ---------- aura: tell people, then a longer check-in ----------
   function auraText() {
-    return T("I just felt an aura. Beside is watching closely for the next 10 minutes. If you get another message, please check on me.");
-  }
-  function contactsOrDemo() {
-    const c = load("profile", {}).contacts;
-    return c && c.length ? c : [{ name: "demo contact", phone: "+10000000000" }];
-  }
-  function contactButtons(boxId, text, primaryClass) {
-    const ch = load("profile", {}).channel || "sms";
-    const box = document.getElementById(boxId);
-    box.innerHTML = "";
-    contactsOrDemo().forEach(c => {
-      [[ch, primaryClass], [ch === "sms" ? "wa" : "sms", "btn-soft"]].forEach(([kind, cls]) => {
-        const b = document.createElement("button");
-        b.className = "btn " + cls;
-        b.textContent = (kind === "sms" ? "SMS " : "WhatsApp ") + (c.name || c.phone);
-        b.onclick = () => sendTo(kind, text, c.phone);
-        box.appendChild(b);
-      });
-    });
+    return tr() ? `${whoName()} az önce aura hissetti ve Beside'a bildirdi. Bir şey olursa sana tekrar haber vereceğiz.`
+                : `${whoName()} just felt an aura and told Beside. We will message you again if something happens.`;
   }
   function startAura() {
     highAttentionUntil = Date.now() + 10 * 60 * 1000;
-    const text = auraText();
-    document.getElementById("auraMsg").textContent = text;
-    addLog({ kind: "aura", text: "Aura reported" });
-    contactButtons("auraButtons", text, "btn-warn");
-    show("aura");
-    autoAlert(T("Aura reported"), text, 4).then(r => {
-      if (r === "sent") document.querySelector("#aura .card .small.muted").textContent =
-        T("Your contacts were notified automatically. You can also send this message yourself:");
-    });
-    // one tap: open the message to the first contact straight away
-    const first = contactsOrDemo()[0];
-    setTimeout(() => sendTo(load("profile", {}).channel || "sms", text, first.phone), 300);
+    const text = auraText(), first = contactsOrDemo()[0];
+    startCountdown("aura");
+    notify(T("Aura reported"), text, 4).then(r => { if (r !== "sent") openMessage(profile().channel || "sms", text, first.phone); });
   }
 
   // ---------- "Are you OK?" countdown ----------
-  const COUNTDOWN_S = 30;
-  let timer = null, reason = "", eventId = null, countdownStartedAt = 0;
+  let timer = null, reason = "", eventId = null, countdownStartedAt = 0, countingDown = false, cdTotal = 20;
   function startCountdown(why) {
-    reason = why;
+    reason = why; countingDown = true;
     countdownStartedAt = Date.now();
-    eventId = addLog({ kind: why === "test" ? "test" : "checkin",
-                       text: why === "test" ? "Practice check-in" : why === "demo" ? "Check-in (demo)" : "Possible seizure detected",
+    const p = profile();
+    cdTotal = why === "aura" ? (p.auraSec || 60) : (p.cdSec || 20);
+    eventId = addLog({ kind: why === "test" ? "test" : why === "aura" ? "aura" : "checkin",
+                       text: { test: "Practice check-in", demo: "Check-in (demo)", aura: "Aura reported" }[why] || "Possible seizure detected",
                        outcome: "no answer yet" });
-    let left = COUNTDOWN_S;
+    if (why === "detected" || why === "demo") {
+      // tell people at once, without waiting for the countdown
+      notify(tr() ? "Beside: olası nöbet" : "Beside: possible seizure",
+             tr() ? `${whoName()} için olası bir nöbet algılandı. Şu an kendisine soruyoruz. ${cdTotal} saniye içinde cevap gelmezse tekrar yazacağız.`
+                  : `A possible seizure was detected for ${whoName()}. We are asking them now. If there is no answer in ${cdTotal} seconds we will message you again.`, 4);
+    }
+    document.getElementById("cdTitle").textContent = T("Are you OK?");
+    document.getElementById("cdSub").textContent = T(why === "aura" ? "Your people know about the aura. Tap below if you are fine."
+                                                     : "If you don't answer, your people will be alerted.");
+    let left = cdTotal;
     clearInterval(timer);
     renderCountdown(left);
     show("countdown");
     if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
     timer = setInterval(() => {
-      left -= 1;
-      renderCountdown(left);
+      left -= 1; renderCountdown(left);
+      if (left % 5 === 0 && navigator.vibrate) navigator.vibrate(300);
       if (left <= 0) { clearInterval(timer); sendAlert(); }
     }, 1000);
   }
   function renderCountdown(left) {
     document.getElementById("seconds").textContent = left;
-    document.getElementById("ringArc").setAttribute("stroke-dashoffset", 628.3 * (1 - left / COUNTDOWN_S));
+    document.getElementById("ringArc").setAttribute("stroke-dashoffset", 628.3 * (1 - left / cdTotal));
   }
   function imOk() {
-    clearInterval(timer);
-    const e = findLog(eventId);
-    const after = e && e.outcome === "contacts alerted";
+    clearInterval(timer); stopSpeaking(); countingDown = false;
+    const e = findLog(eventId), after = e && e.outcome === "people alerted";
     updateLog(eventId, { outcome: after ? "false alarm (after alert)" : "answered: I'm OK",
                          response_s: Math.round((Date.now() - countdownStartedAt) / 1000) });
-    if (reason === "test") { watching ? show("sleep") : goHome(); return; }
+    if (reason !== "test") notify(T("Beside: all OK"), tr() ? `${whoName()} "İyiyim" dedi.` : `${whoName()} answered: I'm OK.`, 3);
+    if (reason === "test" || reason === "aura") { watching ? show("sleep") : goHome(); return; }
     openAftercare();
   }
 
-  // ---------- alert: demo only, opens SMS / WhatsApp, never sends by itself ----------
+  // ---------- alert ----------
   let alertMessage = "";
-  function sendTo(kind, text, phone = "") {
-    const digits = phone.replace(/[^0-9+]/g, "");
-    location.href = kind === "sms"
-      ? "sms:" + digits + "?&body=" + encodeURIComponent(text)
-      : "https://wa.me/" + digits.replace("+", "") + "?text=" + encodeURIComponent(text);
-  }
   function sendAlert() {
-    const p = load("profile", {});
-    updateLog(eventId, { outcome: "contacts alerted" });
-    const render = (where) => {
-      alertMessage = T("Beside alert: possible seizure. No answer to the check-in at") + " " +
-        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ".\n" + T("Location:") + " " +
-        T(where) + "\n" + T("Please call or check on me.");
+    const p = profile(), test = reason === "test";
+    updateLog(eventId, { outcome: test ? "practice finished" : "people alerted" });
+    const no = p.emergencyNo || "112", call = document.getElementById("callBtn");
+    call.href = "tel:" + no.replace(/[^0-9+]/g, "");
+    call.textContent = (tr() ? "Ara: " : "Call ") + no;
+    const render = where => {
+      const n = whoName(), tm = timeNow(), addr = p.myAddress ? (tr() ? `Adres: ${p.myAddress}\n` : `Address: ${p.myAddress}\n`) : "";
+      alertMessage = (test ? (tr() ? "DENEME. " : "TEST. ") : "") + (tr()
+        ? `Beside acil uyarısı: ${n} nöbet geçiriyor olabilir. Saat ${tm}'deki kontrole cevap vermedi.\n${addr}Konum: ${where}\nLütfen hemen ara ya da yanına git.`
+        : `Beside emergency: ${n} may be having a seizure and did not answer the check-in at ${tm}.\n${addr}Location: ${where}\nPlease call or go to them now.`);
       document.getElementById("alertText").textContent = alertMessage;
-      contactButtons("alertButtons", alertMessage, "btn-danger");
+      document.getElementById("callScript").textContent = tr()
+        ? `"Epilepsi hastası ${n} nöbet geçiriyor olabilir. Saat ${tm} civarında başladı ve cevap vermiyor.${p.myAddress ? " Adres: " + p.myAddress + "." : ""}"`
+        : `"${n}, who has epilepsy, may be having a seizure. It started around ${tm} and they are not responding.${p.myAddress ? " The address is " + p.myAddress + "." : ""}"`;
+      contactButtons("alertButtons", alertMessage, "btn-soft");
+      document.getElementById("alertTitle").textContent = T(test ? "Practice: this is what would happen" : "Getting help");
+      show("alert");
       const note = document.getElementById("alertAuto");
       note.textContent = "";
-      autoAlert(i18n.getLang() === "tr" ? "Beside: olası nöbet" : "Beside: possible seizure", alertMessage, 5, where.startsWith("http") ? where : undefined).then(r => {
-        note.textContent = r === "sent" ? T("Your contacts were alerted automatically.") :
-                           r === "failed" ? T("Automatic alert failed. Please use the buttons below.") : "";
+      notify(test ? T("Beside test") : (tr() ? "Beside: ACİL, cevap yok" : "Beside: EMERGENCY, no answer"),
+             alertMessage, test ? 3 : 5, where.startsWith("http") ? where : undefined).then(r => {
+        note.textContent = T(r === "sent" ? "Your people were alerted automatically." : "Opening your message app...");
+        // If ntfy already reached people, stay on this page: opening the message app would send Beside to the
+        // background and stop the spoken instructions. Otherwise open the message app right away.
+        if (r === "sent" && !test) return;
+        const first = contactsOrDemo()[0];
+        setTimeout(() => openMessage(p.channel || "sms", alertMessage, first.phone), 300);
       });
-      show("alert");
+      if (!test) speakLoop(roomText());
     };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => render("https://maps.google.com/?q=" + pos.coords.latitude.toFixed(5) + "," + pos.coords.longitude.toFixed(5)),
-        () => render("unknown"), { timeout: 8000 });
-    } else render("unknown");
+        () => render(T("unknown")), { timeout: 8000 });
+    } else render(T("unknown"));
   }
 
-  // ---------- log: one list of events, kept on this phone ----------
+  // ---------- log ----------
   function addLog(entry) {
     const log = load("log", []);
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -789,57 +849,49 @@
   }
   function findLog(id) { return load("log", []).find(e => e.id === id); }
   function updateLog(id, fields) {
-    const log = load("log", []);
-    const e = log.find(x => x.id === id);
+    const log = load("log", []), e = log.find(x => x.id === id);
     if (e) { Object.assign(e, fields); store("log", log); }
   }
   function fmtDuration(s) {
     if (s == null) return "";
-    const tr = i18n.getLang() === "tr";
-    if (s < 60) return s + (tr ? " sn" : " s");
+    if (s < 60) return s + (tr() ? " sn" : " s");
     const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
-    return h ? `${h} ${tr ? "sa" : "h"} ${m} ${tr ? "dk" : "min"}` : `${m} ${tr ? "dk" : "min"}`;
+    return h ? `${h} ${tr() ? "sa" : "h"} ${m} ${tr() ? "dk" : "min"}` : `${m} ${tr() ? "dk" : "min"}`;
   }
   function describe(e) {
-    const bits = [];
-    const tl = a => a.map(T).join(", ");
-    if (e.outcome) bits.push(T(e.outcome));
-    if (e.response_s != null) bits.push(T("answered after") + " " + fmtDuration(e.response_s));
-    if (e.duration_s != null) bits.push(fmtDuration(e.duration_s));
-    if (e.was) bits.push(T("seizure?") + " " + T(e.was));
-    if (e.strength) bits.push(T("strength") + " " + T(e.strength));
-    if (e.remember) bits.push(T("remembers:") + " " + T(e.remember));
-    if (e.recovery) bits.push(T("recovery") + " " + T(e.recovery));
-    if (e.feel && e.feel.length) bits.push(T("felt:") + " " + tl(e.feel));
-    if (e.meds && e.meds.length) bits.push(T("medication:") + " " + tl(e.meds));
-    if (e.triggers && e.triggers.length) bits.push(T("before:") + " " + tl(e.triggers));
-    return bits.join(" - ");
+    const tl = a => a.map(T).join(", "), b = [];
+    if (e.outcome) b.push(T(e.outcome));
+    if (e.response_s != null) b.push(T("answered after") + " " + fmtDuration(e.response_s));
+    if (e.duration_s != null) b.push(fmtDuration(e.duration_s));
+    if (e.was) b.push(T("seizure?") + " " + T(e.was));
+    if (e.strength) b.push(T("strength") + " " + T(e.strength));
+    if (e.remember) b.push(T("remembers:") + " " + T(e.remember));
+    if (e.recovery) b.push(T("recovery") + " " + T(e.recovery));
+    if (e.feel?.length) b.push(T("felt:") + " " + tl(e.feel));
+    if (e.meds?.length) b.push(T("medication:") + " " + tl(e.meds));
+    if (e.triggers?.length) b.push(T("before:") + " " + tl(e.triggers));
+    return b.join(" - ");
   }
   function openLog() {
-    const log = load("log", []);
-    const box = document.getElementById("logList");
-    box.innerHTML = log.length ? "" : '<p class="muted">Nothing yet.</p>';
+    const log = load("log", []), box = document.getElementById("logList");
+    box.innerHTML = log.length ? "" : '<p class="muted">' + T("Nothing yet.") + "</p>";
     log.forEach(e => {
       const row = document.createElement("div");
       row.className = "log-item";
-      const when = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
       row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
       row.querySelector(".t").textContent = T(e.text);
       row.querySelector(".d").textContent = describe(e);
-      row.querySelector(".w").textContent = when;
-      const tag = row.querySelector(".tag");
-      const alerted = (e.outcome || "").includes("alert");
-      tag.textContent = T(alerted ? "Alert" : e.kind === "aura" ? "Aura" : e.kind === "sleep" ? "Night" : e.kind === "test" ? "Test" : "OK");
+      row.querySelector(".w").textContent = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+      const alerted = (e.outcome || "").includes("alerted"), tag = row.querySelector(".tag");
+      tag.textContent = T(alerted ? "Alert" : e.kind === "aura" ? "Aura" : e.kind === "sleep" ? "Night" : e.kind === "test" ? "Practice" : "OK");
       if (alerted) tag.classList.add("alert");
       box.appendChild(row);
     });
     show("log");
   }
 
-  // ---------- aftercare: optional questions after a real check-in ----------
-  const FEELINGS = ["Fine", "Tired", "Headache", "Confused", "Muscle pain", "Bit my tongue", "Injured", "Wet the bed", "Low mood"];
-  const TRIGGERS = ["Missed medication", "Little sleep", "Stress", "Alcohol", "Ill or fever", "Flashing lights", "Period", "Not sure"];
-  function chips(boxId, items, single = false) {
+  // ---------- choice chips ----------
+  function chips(boxId, items, single = false, selected = []) {
     const box = document.getElementById(boxId);
     box.innerHTML = "";
     items.forEach(item => {
@@ -847,12 +899,20 @@
       l.className = "chip";
       l.innerHTML = single ? '<input type="radio" name="' + boxId + '"><span></span>' : '<input type="checkbox"><span></span>';
       l.querySelector("span").textContent = T(item);
-      l.querySelector("input").value = item;
+      const inp = l.querySelector("input");
+      inp.value = item; inp.checked = selected.includes(item);
       box.appendChild(l);
     });
   }
   const picked = id => [...document.querySelectorAll("#" + id + " input:checked")].map(i => i.value);
   const pickedOne = id => picked(id)[0] || "";
+
+  // ---------- aftercare ----------
+  const FEELINGS = ["Fine", "Tired", "Sleepy", "Headache", "Confused", "Memory gaps", "Trouble speaking", "Muscle pain",
+                    "Weak on one side", "Numbness or tingling", "Dizzy", "Nausea", "Blurred vision", "Bit my tongue",
+                    "Injured", "Wet the bed", "Scared or anxious", "Low mood"];
+  const TRIGGERS = ["Missed medication", "Little sleep", "Stress", "Alcohol", "Ill or fever", "Flashing lights",
+                    "Menstrual period", "Skipped a meal", "Not sure"];
   function openAftercare() {
     chips("wasChips", ["I think so", "No, false alarm", "Not sure"], true);
     chips("strengthChips", ["1 mild", "2", "3", "4", "5 very strong"], true);
@@ -865,58 +925,164 @@
     show("aftercare");
   }
   function finishAftercare(save) {
-    if (save) {
-      updateLog(eventId, { was: pickedOne("wasChips"), strength: pickedOne("strengthChips"),
-                           remember: pickedOne("rememberChips"), recovery: pickedOne("recoveryChips"),
-                           meds: picked("medChips"),
-                           feel: picked("feelChips"), triggers: picked("triggerChips"),
-                           note: document.getElementById("afterNote").value.trim() });
-    }
+    if (save) updateLog(eventId, { was: pickedOne("wasChips"), strength: pickedOne("strengthChips"), remember: pickedOne("rememberChips"),
+                                   recovery: pickedOne("recoveryChips"), meds: picked("medChips"), feel: picked("feelChips"),
+                                   triggers: picked("triggerChips"), note: document.getElementById("afterNote").value.trim() });
     watching ? show("sleep") : goHome();
   }
 
-  // ---------- diary: private by default ----------
+  // ---------- diary: notes, one card per entry ----------
+  const MOODS = ["Great", "Good", "Okay", "Tired", "Low", "Anxious", "Irritable", "Unwell"];
+  const STRESS = ["No stress, calm", "Very slight", "Slight, relaxed", "A little tense", "Noticeably tense", "Moderate, coping",
+                  "Quite stressed", "Very stressed", "Hard to focus", "Overwhelmed", "Unbearable"];
+  let editingNote = null;
   function openDiary() {
-    chips("moodChips", ["Good", "Okay", "Low"], true);
-    chips("stressChips", ["Low", "Medium", "High"], true);
-    chips("dMedChips", ["All taken", "Some missed", "All missed"], true);
-    ["dSleep", "dText"].forEach(id => document.getElementById(id).value = "");
-    document.getElementById("dShare").checked = false;
-    renderDiary();
+    const grid = document.getElementById("noteGrid"), d = load("diary", []);
+    grid.innerHTML = "";
+    const nb = document.createElement("button");
+    nb.className = "note-card new"; nb.textContent = T("+ New note"); nb.onclick = () => openNote(null);
+    grid.appendChild(nb);
+    d.forEach(e => {
+      const c = document.createElement("button");
+      c.className = "note-card";
+      c.innerHTML = '<div class="d"></div><div class="m"></div><div class="t"></div>';
+      c.querySelector(".d").textContent = new Date(e.time).toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" });
+      c.querySelector(".m").textContent = [e.mood && T(e.mood), e.stress != null && e.stress !== "" && (T("stress") + " " + e.stress + "/10"),
+                                           e.share && T("in report")].filter(Boolean).join(" - ");
+      c.querySelector(".t").textContent = e.text || "";
+      c.onclick = () => openNote(e.id);
+      grid.appendChild(c);
+    });
     show("diary");
   }
-  function saveDiary() {
+  function openNote(id) {
+    const e = id ? load("diary", []).find(x => x.id === id) : null;
+    editingNote = id;
+    document.getElementById("noteDate").textContent = new Date(e ? e.time : Date.now())
+      .toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    document.getElementById("noteDelete").style.visibility = e ? "visible" : "hidden";
+    chips("moodChips", MOODS, true, e ? [e.mood] : []);
+    chips("dMedChips", ["All taken", "Some missed", "All missed"], true, e ? [e.med] : []);
+    document.getElementById("stress").value = e && e.stress != null ? e.stress : 0;
+    document.getElementById("dSleep").value = e ? e.sleep || "" : "";
+    document.getElementById("dText").value = e ? e.text || "" : "";
+    document.getElementById("dShare").checked = !!(e && e.share);
+    chips("shareScope", ["Only feelings and stress", "Everything, including my note"], true,
+          [e && e.share === "all" ? "Everything, including my note" : "Only feelings and stress"]);
+    renderStress(); renderShare();
+    show("note");
+  }
+  function renderStress() {
+    const v = Number(document.getElementById("stress").value);
+    document.getElementById("stressLabel").textContent = v + "/10: " + T(STRESS[v]);
+  }
+  function renderShare() { document.getElementById("shareScope").style.display = document.getElementById("dShare").checked ? "flex" : "none"; }
+  function saveNote() {
     const d = load("diary", []);
-    d.unshift({ time: new Date().toISOString(), mood: pickedOne("moodChips"), stress: pickedOne("stressChips"),
-                med: pickedOne("dMedChips"), sleep: document.getElementById("dSleep").value,
-                text: document.getElementById("dText").value.trim(), share: document.getElementById("dShare").checked });
-    store("diary", d.slice(0, 1000));
+    const share = document.getElementById("dShare").checked
+      ? (pickedOne("shareScope") === "Everything, including my note" ? "all" : "feelings") : false;
+    const data = { mood: pickedOne("moodChips"), stress: Number(document.getElementById("stress").value), med: pickedOne("dMedChips"),
+                   sleep: document.getElementById("dSleep").value, text: document.getElementById("dText").value.trim(), share };
+    const e = editingNote && d.find(x => x.id === editingNote);
+    if (e) Object.assign(e, data);
+    else d.unshift({ id: Date.now().toString(36), time: new Date().toISOString(), ...data });
+    store("diary", d.slice(0, 2000));
     openDiary();
   }
-  function renderDiary() {
-    const d = load("diary", []);
-    const box = document.getElementById("diaryList");
-    box.innerHTML = d.length ? "" : '<p class="muted">No entries yet.</p>';
-    d.forEach(e => {
-      const row = document.createElement("div");
-      row.className = "log-item";
-      row.innerHTML = '<div><div class="t"></div><div class="small muted d"></div><div class="small muted w"></div></div><span class="tag"></span>';
-      row.querySelector(".t").textContent = e.text || T("(no notes)");
-      row.querySelector(".d").textContent = [e.mood && T("mood") + " " + T(e.mood), e.sleep && e.sleep + " " + T("h sleep"),
-                                             e.stress && T("stress") + " " + T(e.stress), e.med && T(e.med)].filter(Boolean).join(" - ");
-      row.querySelector(".w").textContent = new Date(e.time).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-      row.querySelector(".tag").textContent = T(e.share ? "Shared" : "Private");
-      box.appendChild(row);
-    });
+  function deleteNote() {
+    if (!editingNote) return;
+    store("diary", load("diary", []).filter(x => x.id !== editingNote));
+    openDiary();
   }
   function sharedDiary() {
-    const days = Number(document.getElementById("period").value);
-    const from = Date.now() - days * 864e5;
+    const from = Date.now() - Number(document.getElementById("period").value) * 864e5;
     return load("diary", []).filter(e => e.share && new Date(e.time) >= from).reverse();
   }
-  function avgSleep() {
-    const v = sharedDiary().map(e => parseFloat(e.sleep)).filter(x => !isNaN(x));
-    return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(1) : "?";
+
+  // ---------- report for the doctor ----------
+  function reportEvents() {
+    const from = Date.now() - Number(document.getElementById("period").value) * 864e5;
+    return load("log", []).filter(e => new Date(e.time) >= from).reverse();
+  }
+  function reportSummary(ev) {
+    const p = profile();
+    const checks = ev.filter(e => e.kind === "checkin");
+    const alerts = checks.filter(e => (e.outcome || "").includes("alerted"));
+    const nights = ev.filter(e => e.kind === "sleep");
+    const hours = nights.reduce((a, e) => a + (e.duration_s || 0), 0) / 3600;
+    const count = key => {
+      const c = {};
+      checks.forEach(e => (e[key] || []).forEach(x => c[x] = (c[x] || 0) + 1));
+      return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${T(k)} (${v})`).join(", ") || (tr() ? "kayıt yok" : "none");
+    };
+    const diary = sharedDiary(), st = diary.map(e => e.stress).filter(x => x != null && x !== "");
+    const sl = diary.map(e => parseFloat(e.sleep)).filter(x => !isNaN(x));
+    const avg = a => a.length ? (a.reduce((s, x) => s + x, 0) / a.length).toFixed(1) : null;
+    const v = { days: document.getElementById("period").value, today: new Date().toLocaleDateString(),
+                type: T({ "tonic-clonic": "Tonic-clonic (including focal to bilateral)", "focal-motor": "Focal with movement",
+                          "focal-nonmotor": "Focal without movement" }[p.szType] || "-"),
+                checks: checks.length, alerts: alerts.length, auras: ev.filter(e => e.kind === "aura").length,
+                nights: nights.length, hours: hours.toFixed(1), feel: count("feel"), trig: count("triggers"),
+                nDiary: diary.length, stress: avg(st), sleep: avg(sl) };
+    const text = tr()
+      ? `Beside raporu, son ${v.days} gün (${v.today})\nNöbet türü (doktor): ${v.type}\n\n` +
+        `Olası nöbet alarmı: ${v.checks}\nCevap gelmediği için yakınlara haber verilen: ${v.alerts}\nBildirilen aura: ${v.auras}\n` +
+        `İzlenen gece: ${v.nights} (${v.hours} saat)\n\nNöbetten sonra hissedilenler: ${v.feel}\nOlası tetikleyiciler: ${v.trig}\n` +
+        `Paylaşılan günlük notu: ${v.nDiary}` + (v.stress ? `, ortalama stres ${v.stress}/10` : "") + (v.sleep ? `, ortalama uyku ${v.sleep} saat` : "") +
+        `\n\nSadece hareketle tespit edildi, EEG ile doğrulanmadı. Beside bir araştırma prototipidir, tıbbi cihaz değildir.`
+      : `Beside report, last ${v.days} days (${v.today})\nSeizure type (doctor): ${v.type}\n\n` +
+        `Possible seizure alarms: ${v.checks}\nPeople alerted because there was no answer: ${v.alerts}\nAuras reported: ${v.auras}\n` +
+        `Nights watched: ${v.nights} (${v.hours} h)\n\nFelt afterwards: ${v.feel}\nPossible triggers: ${v.trig}\n` +
+        `Shared diary notes: ${v.nDiary}` + (v.stress ? `, average stress ${v.stress}/10` : "") + (v.sleep ? `, average sleep ${v.sleep} h` : "") +
+        `\n\nDetected from movement only, not confirmed by EEG. Beside is a research prototype, not a medical device.`;
+    return { stats: [[v.checks, T("possible seizure alarms")], [v.alerts, T("times people were alerted")],
+                     [v.auras, T("auras reported")], [v.hours, T("hours watched at night")]], text };
+  }
+  function renderReport() {
+    const r = reportSummary(reportEvents()), box = document.getElementById("stats");
+    box.innerHTML = "";
+    r.stats.forEach(([n, l]) => {
+      const d = document.createElement("div");
+      d.className = "stat"; d.innerHTML = '<div class="n"></div><div class="l"></div>';
+      d.querySelector(".n").textContent = n; d.querySelector(".l").textContent = l;
+      box.appendChild(d);
+    });
+    document.getElementById("reportText").textContent = r.text;
+  }
+  function openReport() { renderReport(); show("report"); }
+  function csvFile() {
+    const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"', tl = a => (a || []).map(T).join("; ");
+    const rows = [["date", "time", "event", "outcome", "answered_after_s", "duration_s", "was_seizure", "strength_1to5", "remembers",
+                   "recovery", "felt", "before", "medication", "stress_0to10", "sleep_h", "note"]];
+    reportEvents().forEach(e => {
+      const d = new Date(e.time);
+      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), T(e.text), T(e.outcome || ""), e.response_s, e.duration_s,
+                 T(e.was || ""), (e.strength || "").slice(0, 1), T(e.remember || ""), T(e.recovery || ""), tl(e.feel), tl(e.triggers),
+                 tl(e.meds), "", "", e.note]);
+    });
+    sharedDiary().forEach(e => {
+      const d = new Date(e.time);
+      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), T("Diary"), T(e.mood || ""), "", "", "", "", "", "", "", "",
+                 T(e.med || ""), e.stress, e.sleep, e.share === "all" ? e.text : ""]);
+    });
+    const csv = "﻿" + rows.map(r => r.map(q).join(",")).join("\r\n");
+    return new File([csv], "beside-report-" + new Date().toLocaleDateString("en-CA") + ".csv", { type: "text/csv" });
+  }
+  function downloadCsv() {
+    const f = csvFile(), a = document.createElement("a");
+    a.href = URL.createObjectURL(f); a.download = f.name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    store("lastReport", new Date().toISOString());
+  }
+  async function shareReport() {
+    const text = reportSummary(reportEvents()).text, f = csvFile();
+    store("lastReport", new Date().toISOString());
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      try { await navigator.share({ title: "Beside", text, files: [f] }); } catch (e) {}
+      return;
+    }
+    location.href = "mailto:" + encodeURIComponent(profile().docEmail || "") + "?subject=" + encodeURIComponent(tr() ? "Beside nöbet raporu" : "Beside seizure report") +
+                    "&body=" + encodeURIComponent(text);
   }
 
   // ---------- replay of a real night ----------
@@ -924,46 +1090,37 @@
   async function openReplay() {
     show("replay");
     if (!RP) {
-      document.getElementById("rpStatus").textContent = "...";
       try { RP = await (await fetch("replay.json")).json(); } catch (e) {
-        document.getElementById("rpStatus").textContent = "Could not load the recording."; return;
+        document.getElementById("rpStatus").textContent = T("Could not load the recording."); return;
       }
     }
-    const tr = i18n.getLang() === "tr";
-    const sz = RP.seizures[0];
-    document.getElementById("rpSource").textContent = RP.source + ". " + (RP.patient_group === "train"
-      ? T("Training patient: the model has seen this night during training, so this shows how the app behaves, not how accurate it is. Accuracy on unseen patients is reported in the README.")
-      : T("Test patient: the model never saw this person during training."));
+    document.getElementById("rpSource").textContent = RP.source + ". " + T(RP.patient_group === "train"
+      ? "This patient was part of the training data, so this shows how the app behaves, not how accurate it is. Accuracy on new patients is in the README."
+      : "The model never saw this patient during training.");
     document.getElementById("rpEnd").textContent = fmtClock(RP.x.length / RP.fs);
-    resetReplay();
-    drawReplay();
+    resetReplay(); drawReplay();
   }
-  function fmtClock(sec) { const m = Math.floor(sec / 60), s2 = Math.floor(sec % 60); return m + ":" + String(s2).padStart(2, "0"); }
+  function fmtClock(sec) { return Math.floor(sec / 60) + ":" + String(Math.floor(sec % 60)).padStart(2, "0"); }
   function resetReplay() {
     rpPos = 0; rpScores = []; rpMoves = []; rpAlarm = null;
-    rpDet = new BesideDetector.Detector(MODEL, {
-      onWindow: w => rpScores.push([w.t, w.p]),
-      onAlarm: w => { if (rpAlarm === null) rpAlarm = w.t; }
-    });
+    rpDet = MODEL ? new BesideDetector.Detector(MODEL, { onWindow: w => rpScores.push([w.t, w.p]), onAlarm: w => { if (rpAlarm === null) rpAlarm = w.t; } }) : null;
     document.getElementById("rpPlay").textContent = T("Play");
   }
   function toggleReplay() {
     if (!RP || !MODEL) return;
     if (rpTimer) { stopReplay(); return; }
-    if (rpPos >= RP.x.length) resetReplay();
+    if (rpPos >= RP.x.length || !rpDet) resetReplay();
     document.getElementById("rpPlay").textContent = T("Pause");
     let last = performance.now();
     const step = now => {
       const n = Math.min(RP.x.length - rpPos, Math.round(((now - last) / 1000) * RP.fs * rpSpeed));
       last = now;
-      const sc = RP.scale;
       for (let i = 0; i < n; i++, rpPos++) {
-        rpDet.pushSample(RP.x[rpPos] / sc, RP.y[rpPos] / sc, RP.z[rpPos] / sc);
+        rpDet.pushSample(RP.x[rpPos] / RP.scale, RP.y[rpPos] / RP.scale, RP.z[rpPos] / RP.scale);
         if (rpPos % RP.fs === 0) {
-          // movement shown per second: spread of the acceleration magnitude
           let lo = Infinity, hi = -Infinity;
           for (let k = rpPos; k < Math.min(rpPos + RP.fs, RP.x.length); k++) {
-            const m = Math.hypot(RP.x[k], RP.y[k], RP.z[k]) / sc; lo = Math.min(lo, m); hi = Math.max(hi, m);
+            const m = Math.hypot(RP.x[k], RP.y[k], RP.z[k]) / RP.scale; lo = Math.min(lo, m); hi = Math.max(hi, m);
           }
           rpMoves.push([rpPos / RP.fs, hi - lo]);
         }
@@ -985,164 +1142,50 @@
   }
   function drawReplay() {
     if (!RP) return;
-    const css = getComputedStyle(document.documentElement);
-    const col = n => css.getPropertyValue(n).trim();
-    const total = RP.x.length / RP.fs, sz = RP.seizures[0], tr = i18n.getLang() === "tr";
-    const thr = MODEL ? MODEL.thresholds.default : 0.95;
+    const css = getComputedStyle(document.documentElement), col = n => css.getPropertyValue(n).trim();
+    const total = RP.x.length / RP.fs, sz = RP.seizures[0], thr = MODEL ? MODEL.thresholds.default : 0.95;
     const panel = (id, pts, yMax, extra) => {
-      const c = document.getElementById(id), dpr = window.devicePixelRatio || 1;
-      const W = c.clientWidth, H = 110;
+      const c = document.getElementById(id), dpr = window.devicePixelRatio || 1, W = c.clientWidth, H = 110;
       c.width = W * dpr; c.height = H * dpr;
       const g = c.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, W, H);
       const X = t => (t / total) * W, Y = v => H - 6 - (Math.min(v, yMax) / yMax) * (H - 12);
       g.fillStyle = col("--warn-soft"); g.fillRect(X(sz[0]), 0, X(sz[1]) - X(sz[0]), H);
       g.strokeStyle = col("--line"); g.lineWidth = 1; g.beginPath(); g.moveTo(0, H - 6); g.lineTo(W, H - 6); g.stroke();
-      if (extra) extra(g, X, Y, W, H);
+      if (extra) extra(g, X, Y, W);
       g.strokeStyle = col("--primary"); g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
       pts.forEach(([t, v], k) => k ? g.lineTo(X(t), Y(v)) : g.moveTo(X(t), Y(v))); g.stroke();
-      if (rpAlarm !== null) {
-        g.strokeStyle = col("--danger"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(rpAlarm), 0); g.lineTo(X(rpAlarm), H); g.stroke();
-      }
+      if (rpAlarm !== null) { g.strokeStyle = col("--danger"); g.lineWidth = 2; g.beginPath(); g.moveTo(X(rpAlarm), 0); g.lineTo(X(rpAlarm), H); g.stroke(); }
     };
-    const mMax = Math.max(1e-6, ...rpMoves.map(p => p[1])) * 1.1;
-    panel("rpMove", rpMoves, mMax);
+    panel("rpMove", rpMoves, Math.max(1e-6, ...rpMoves.map(p => p[1])) * 1.1);
     panel("rpScore", rpScores, 1, (g, X, Y, W) => {
       g.setLineDash([5, 4]); g.strokeStyle = col("--muted"); g.lineWidth = 1;
       g.beginPath(); g.moveTo(0, Y(thr)); g.lineTo(W, Y(thr)); g.stroke(); g.setLineDash([]);
     });
-    const now = rpPos / RP.fs;
+    const now = rpPos / RP.fs, st = document.getElementById("rpStatus");
     document.getElementById("rpClock").textContent = fmtClock(now);
-    const st = document.getElementById("rpStatus");
     if (rpAlarm !== null && rpAlarm >= sz[0] - 30) {
-      st.textContent = tr ? `Alarm verildi: nöbet başladıktan ${Math.round(rpAlarm - sz[0])} saniye sonra. Telefonda burada "İyi misin?" geri sayımı başlardı.`
-                          : `Alarm raised ${Math.round(rpAlarm - sz[0])} s after the seizure started. On a phone, the "Are you OK?" countdown would start now.`;
+      st.textContent = tr() ? `Alarm: nöbet başladıktan ${Math.round(rpAlarm - sz[0])} saniye sonra. Telefonda burada "İyi misin?" sorusu gelirdi.`
+                            : `Alarm ${Math.round(rpAlarm - sz[0])} s after the seizure started. On a phone, "Are you OK?" would appear now.`;
       st.style.color = "var(--danger)";
     } else if (rpAlarm !== null) {
-      st.textContent = tr ? "Nöbetten önce bir yanlış alarm verildi." : "A false alarm was raised before the seizure.";
-      st.style.color = "var(--warn)";
+      st.textContent = T("A false alarm went off before the seizure."); st.style.color = "var(--warn)";
     } else if (now >= sz[0]) {
-      st.textContent = tr ? "Nöbet başladı (doktorların video-EEG işaretlemesi). Dedektör izliyor..." : "The seizure has started (clinicians' video-EEG label). The detector is watching...";
-      st.style.color = "var(--warn)";
+      st.textContent = T("The seizure has started. The detector is watching..."); st.style.color = "var(--warn)";
     } else if (rpPos > 0) {
-      st.textContent = tr ? `Uyku. Nöbete ${fmtClock(sz[0] - now)} kaldı. Dedektör bu kişinin normal hareketini öğreniyor.`
-                          : `Asleep. ${fmtClock(sz[0] - now)} until the seizure. The detector is learning this person's normal movement.`;
+      st.textContent = tr() ? `Uykuda. Nöbete ${fmtClock(sz[0] - now)} var. Dedektör bu kişinin normal hareketini öğreniyor.`
+                            : `Asleep. ${fmtClock(sz[0] - now)} until the seizure. The detector is learning this person's normal movement.`;
       st.style.color = "";
     }
   }
 
-  // ---------- report for the doctor ----------
-  function reportEvents() {
-    const days = Number(document.getElementById("period").value);
-    const from = Date.now() - days * 864e5;
-    return load("log", []).filter(e => new Date(e.time) >= from).reverse();
-  }
-  function reportSummary(ev) {
-    const p = load("profile", {});
-    const checks = ev.filter(e => e.kind === "checkin");
-    const alerts = checks.filter(e => (e.outcome || "").includes("alert"));
-    const nights = ev.filter(e => e.kind === "sleep");
-    const hours = nights.reduce((a, e) => a + (e.duration_s || 0), 0) / 3600;
-    const count = (key) => {
-      const c = {};
-      checks.forEach(e => (e[key] || []).forEach(x => c[x] = (c[x] || 0) + 1));
-      return Object.entries(c).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${T(k)} (${v})`).join(", ")
-        || (i18n.getLang() === "tr" ? "kayıt yok" : "none recorded");
-    };
-    const v = {
-      days: document.getElementById("period").value, today: new Date().toLocaleDateString(),
-      type: T({ "tonic-clonic": "Tonic-clonic (including focal to bilateral)", "focal-motor": "Focal with movement",
-                "focal-nonmotor": "Focal without movement" }[p.szType] || "-"),
-      typical: p.typicalS || "?", checks: checks.length, alerts: alerts.length, cd: COUNTDOWN_S,
-      auras: ev.filter(e => e.kind === "aura").length, nights: nights.length, hours: hours.toFixed(1),
-      feel: count("feel"), trig: count("triggers"), diary: sharedDiary().length,
-      sleep: sharedDiary().some(e => e.sleep != null && e.sleep !== "") ? avgSleep() : null
-    };
-    const text = i18n.getLang() === "tr"
-      ? `Beside raporu, son ${v.days} gün (oluşturulma: ${v.today})\n` +
-        `Doktorun girdiği nöbet türü: ${v.type}; tipik süre ${v.typical} sn\n\n` +
-        `Tespit edilen olası nöbet: ${v.checks}\n` +
-        `Yakınlara haber verilen (${v.cd} sn içinde cevap yok): ${v.alerts}\n` +
-        `Bildirilen aura: ${v.auras}\n` +
-        `İzlenen gece: ${v.nights} (${v.hours} saat)\n\n` +
-        `Sonrasında hasta şunları hissetti: ${v.feel}\n` +
-        `Not edilen olası tetikleyiciler: ${v.trig}\n` +
-        `Paylaşılan günlük notu: ${v.diary}` + (v.sleep ? `, ortalama uyku ${v.sleep} saat` : "") + `\n\n` +
-        `Sadece telefon hareketiyle tespit edilmiştir; EEG ile doğrulanmamıştır. Beside bir araştırma prototipidir, tıbbi cihaz değildir.`
-      : `Beside report, last ${v.days} days (created ${v.today})\n` +
-        `Seizure type entered by doctor: ${v.type}; typical length ${v.typical} s\n\n` +
-        `Possible seizures detected: ${v.checks}\n` +
-        `Contacts alerted (no answer in ${v.cd} s): ${v.alerts}\n` +
-        `Auras reported: ${v.auras}\n` +
-        `Nights watched: ${v.nights} (${v.hours} h)\n\n` +
-        `Afterwards the patient felt: ${v.feel}\n` +
-        `Possible triggers noted: ${v.trig}\n` +
-        `Shared diary entries: ${v.diary}` + (v.sleep ? `, average sleep ${v.sleep} h` : "") + `\n\n` +
-        `Detected by phone movement only; not confirmed by EEG. Beside is a research prototype, not a medical device.`;
-    return {
-      stats: [[v.checks, T("possible seizures detected")], [v.alerts, T("times contacts were alerted")],
-              [v.auras, T("auras reported")], [v.hours, T("hours watched at night")]],
-      text
-    };
-  }
-  function renderReport() {
-    const r = reportSummary(reportEvents());
-    document.getElementById("stats").innerHTML = "";
-    r.stats.forEach(([n, l]) => {
-      const d = document.createElement("div");
-      d.className = "stat";
-      d.innerHTML = '<div class="n"></div><div class="l"></div>';
-      d.querySelector(".n").textContent = n;
-      d.querySelector(".l").textContent = l;
-      document.getElementById("stats").appendChild(d);
-    });
-    document.getElementById("reportText").textContent = r.text;
-  }
-  function openReport() { renderReport(); show("report"); }
-  function csvFile() {
-    const q = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
-    const rows = [["date", "time", "event", "outcome", "answered_after_s", "duration_s", "was_seizure", "strength_1to5",
-                   "remembers", "recovery", "felt", "before", "medication", "note"]];
-    reportEvents().forEach(e => {
-      const d = new Date(e.time);
-      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), e.text, e.outcome, e.response_s,
-                 e.duration_s, e.was, (e.strength || "").slice(0, 1), e.remember, e.recovery,
-                 (e.feel || []).join("; "), (e.triggers || []).join("; "), (e.meds || []).join("; "), e.note]);
-    });
-    sharedDiary().forEach(e => {
-      const d = new Date(e.time);
-      rows.push([d.toLocaleDateString("en-CA"), d.toTimeString().slice(0, 5), "Diary", "", "", "", "", "", "", "",
-                 "mood " + (e.mood || "") + "; sleep " + (e.sleep ?? "") + " h; stress " + (e.stress || ""), "",
-                 e.med || "", e.text]);
-    });
-    const csv = "\ufeff" + rows.map(r => r.map(q).join(",")).join("\r\n");   // BOM so Excel reads it correctly
-    const name = "beside-report-" + new Date().toLocaleDateString("en-CA") + ".csv";
-    return new File([csv], name, { type: "text/csv" });
-  }
-  function downloadCsv() {
-    const f = csvFile();
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(f);
-    a.download = f.name;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    store("lastReport", new Date().toISOString());
-  }
-  async function shareReport() {
-    const text = reportSummary(reportEvents()).text;
-    const f = csvFile();
-    store("lastReport", new Date().toISOString());
-    if (navigator.canShare && navigator.canShare({ files: [f] })) {
-      try { await navigator.share({ title: "Beside report", text, files: [f] }); return; } catch (e) { return; }
-    }
-    const p = load("profile", {});
-    location.href = "mailto:" + encodeURIComponent(p.docEmail || "") + "?subject=" +
-      encodeURIComponent("Beside seizure report") + "&body=" + encodeURIComponent(text + "\n\n(Spreadsheet attached separately.)");
-  }
-
   // ---------- start ----------
-  i18n.setLang(load("profile", {}).lang || i18n.detectLang());
+  i18n.setLang(profile().lang || i18n.detectLang());
+  applyCalm(profile().calm);
+  document.getElementById("slogan").textContent = T(SLOGAN);
   if (!load("consent", null)) show("consent");
-  else load("profile", {}).szType ? goHome() : openSettings();
+  else profile().szType ? goHome() : openSettings();
+  const calmNow = profile().calm || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => document.getElementById("splash").classList.add("hide"), calmNow ? 300 : 1700);
 </script>
 </body>
 </html>
