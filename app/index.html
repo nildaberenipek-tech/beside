@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4f7f6">
-  <title>Beside</title>
+  <title>Lambaura</title>
   <style>
     /* ---------- Design tokens: change colours and sizes here ---------- */
     :root {
@@ -89,6 +89,7 @@
     #splash.hide { opacity: 0; pointer-events: none; }
     #splash .mark { animation: grow 0.9s cubic-bezier(.2, .8, .2, 1) both; }
     #splash .words { margin-left: 14px; animation: slide 0.8s .35s cubic-bezier(.2, .8, .2, 1) both; }
+    .brand .mini { flex: none; }
     #splash .name { font-size: 40px; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; line-height: 1; }
     #splash .slogan { font-size: 16px; color: var(--muted); margin-top: 6px; }
     @keyframes grow { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -146,22 +147,26 @@
 
 <!-- Splash -->
 <div id="splash" aria-hidden="true">
-  <svg class="mark" width="76" height="76" viewBox="0 0 76 76">
-    <!-- placeholder mark (final logo by the design teammate): the night, and someone beside you -->
-    <path d="M44 10 A28 28 0 1 0 66 50 A22 22 0 1 1 44 10 Z" fill="var(--primary)"/>
-    <circle cx="58" cy="22" r="6" fill="var(--primary)"/>
+  <svg class="mark" width="92" height="88" viewBox="0 0 104 100" aria-hidden="true">
+    <!-- Lambaura mark: a shield, the letter L, and a heartbeat line leaving the shield -->
+    <path d="M50 5 C38 12 24 15 13 15 V46 C13 70 29 86 50 95 C71 86 87 70 87 46 V15 C76 15 62 12 50 5 Z"
+          fill="none" stroke="var(--primary)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M32 26 H44 V60 H60 V72 H32 Z" fill="none" stroke="var(--primary)" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M36 30 V68 H44" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+    <polyline points="60,66 66,66 70,57 74,77 78,47 82,82 86,60 89,66 101,66" fill="none" stroke="var(--primary)"
+              stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
   </svg>
   <div class="words">
-    <div class="name">Beside</div>
+    <div class="name">Lambaura</div>
     <div class="slogan" id="slogan">Always beside you</div>
   </div>
 </div>
 
 <!-- Consent, shown once -->
 <section id="consent">
-  <div class="topbar"><div class="brand">Beside</div></div>
+  <div class="topbar"><div class="brand">Lambaura</div></div>
   <h1>Before we start</h1>
-  <p class="muted">At night, Beside watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.</p>
+  <p class="muted">At night, Lambaura watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.</p>
   <div class="card">
     <div class="perm"><div class="bullet"></div><div><strong>Motion</strong><div class="small muted">To notice the rhythmic jerking of a convulsive seizure while you sleep.</div></div></div>
     <div class="perm"><div class="bullet"></div><div><strong>Location</strong><div class="small muted">Only sent in an emergency, so your people know where to come.</div></div></div>
@@ -169,7 +174,7 @@
     <div class="perm"><div class="bullet"></div><div><strong>Your log</strong><div class="small muted">Kept on this phone. It only leaves when you share a report.</div></div></div>
   </div>
   <div class="card" style="background:var(--warn-soft);border-color:transparent">
-    <strong>Beside is a research prototype, not a medical device.</strong>
+    <strong>Lambaura is a research prototype, not a medical device.</strong>
     <div class="small">It can miss seizures and it can raise false alarms. Keep following your doctor's advice.</div>
   </div>
   <button class="btn btn-primary" onclick="acceptConsent()">I understand, continue</button>
@@ -178,7 +183,7 @@
 <!-- Settings -->
 <section id="settings">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" id="settingsBack" onclick="goHome()">Done</button>
   </div>
   <h1>Your safety plan</h1>
@@ -208,7 +213,7 @@
     <label for="typicalS">Usual seizure length (seconds)</label>
     <input id="typicalS" type="number" inputmode="numeric" min="5" max="600" value="90">
     <label class="switch" style="margin-top:16px"><input type="checkbox" id="soundSensitive"><span>Sound can trigger my seizures</span></label>
-    <p class="hint">If ticked, Beside will not speak out loud during an alert.</p>
+    <p class="hint">If ticked, Lambaura will not speak out loud during an alert.</p>
     <label for="docName">Doctor's name</label>
     <input id="docName" placeholder="Dr. ..." autocomplete="off">
     <label for="docEmail">Doctor's email for reports</label>
@@ -293,7 +298,7 @@
   <h2>Display</h2>
   <div class="card">
     <label class="switch"><input type="checkbox" id="calm" onchange="applyCalm(this.checked)"><span>Calm display</span></label>
-    <p class="hint">Dims the app and turns off all animation. Beside never flashes.</p>
+    <p class="hint">Dims the app and turns off all animation. Lambaura never flashes.</p>
   </div>
 
   <button class="btn btn-primary" onclick="saveSettings()">Save</button>
@@ -303,7 +308,7 @@
 <!-- Home -->
 <section id="home">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="openSettings()">Settings</button>
   </div>
   <h1 id="greeting">Good evening</h1>
@@ -364,7 +369,7 @@
 
 <!-- Alert -->
 <section id="alert">
-  <div class="topbar"><div class="brand">Beside</div></div>
+  <div class="topbar"><div class="brand">Lambaura</div></div>
   <h1 style="color:var(--danger)" id="alertTitle">Getting help</h1>
   <p id="alertAuto" style="font-weight:600"></p>
   <a class="btn btn-danger btn-huge" id="callBtn" href="tel:112">Call 112</a>
@@ -383,7 +388,7 @@
 <!-- Log -->
 <section id="log">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>Seizure log</h1>
@@ -394,7 +399,7 @@
 <!-- Aftercare -->
 <section id="aftercare">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="finishAftercare(false)">Skip</button>
   </div>
   <h1>How are you feeling?</h1>
@@ -421,7 +426,7 @@
 <!-- Diary: list of notes -->
 <section id="diary">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>My diary</h1>
@@ -457,7 +462,7 @@
 <!-- Report -->
 <section id="report">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="goHome()">Back</button>
   </div>
   <h1>Report for your doctor</h1>
@@ -477,11 +482,11 @@
 <!-- Replay -->
 <section id="replay">
   <div class="topbar">
-    <div class="brand">Beside</div>
+    <div class="brand">Lambaura</div>
     <button class="link" onclick="stopReplay(); goHome()">Back</button>
   </div>
   <h1>A real seizure, replayed</h1>
-  <p class="muted">This is a real night recorded in a hospital. Press play to watch Beside's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Beside would raise the alarm.</p>
+  <p class="muted">This is a real night recorded in a hospital. Press play to watch Lambaura's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Lambaura would raise the alarm.</p>
   <p class="small muted" id="rpSource"></p>
   <div class="card">
     <div class="small muted">Movement (sensor on the chest)</div>
@@ -626,7 +631,7 @@
     const st = document.getElementById("ntfyStatus");
     st.textContent = T("Sending...");
     try {
-      await ntfySend(ntfyTopic, T("Beside test"), T("This is a test from Beside. If you can read it, alerts work."), 3);
+      await ntfySend(ntfyTopic, T("Lambaura test"), T("This is a test from Lambaura. If you can read it, alerts work."), 3);
       st.textContent = T("Sent. Check their phone.");
     } catch (e) { st.textContent = T("Could not send. Check the internet connection.") + " (" + e.message + ")"; }
   }
@@ -745,8 +750,8 @@
 
   // ---------- aura: tell people, then a longer check-in ----------
   function auraText() {
-    return tr() ? `${whoName()} az önce aura hissetti ve Beside'a bildirdi. Bir şey olursa sana tekrar haber vereceğiz.`
-                : `${whoName()} just felt an aura and told Beside. We will message you again if something happens.`;
+    return tr() ? `${whoName()} az önce aura hissetti ve Lambaura'ya bildirdi. Bir şey olursa sana tekrar haber vereceğiz.`
+                : `${whoName()} just felt an aura and told Lambaura. We will message you again if something happens.`;
   }
   function startAura() {
     highAttentionUntil = Date.now() + 10 * 60 * 1000;
@@ -767,7 +772,7 @@
                        outcome: "no answer yet" });
     if (why === "detected" || why === "demo") {
       // tell people at once, without waiting for the countdown
-      notify(tr() ? "Beside: olası nöbet" : "Beside: possible seizure",
+      notify(tr() ? "Lambaura: olası nöbet" : "Lambaura: possible seizure",
              tr() ? `${whoName()} için olası bir nöbet algılandı. Şu an kendisine soruyoruz. ${cdTotal} saniye içinde cevap gelmezse tekrar yazacağız.`
                   : `A possible seizure was detected for ${whoName()}. We are asking them now. If there is no answer in ${cdTotal} seconds we will message you again.`, 4);
     }
@@ -794,7 +799,7 @@
     const e = findLog(eventId), after = e && e.outcome === "people alerted";
     updateLog(eventId, { outcome: after ? "false alarm (after alert)" : "answered: I'm OK",
                          response_s: Math.round((Date.now() - countdownStartedAt) / 1000) });
-    if (reason !== "test") notify(T("Beside: all OK"), tr() ? `${whoName()} "İyiyim" dedi.` : `${whoName()} answered: I'm OK.`, 3);
+    if (reason !== "test") notify(T("Lambaura: all OK"), tr() ? `${whoName()} "İyiyim" dedi.` : `${whoName()} answered: I'm OK.`, 3);
     if (reason === "test" || reason === "aura") { watching ? show("sleep") : goHome(); return; }
     openAftercare();
   }
@@ -810,8 +815,8 @@
     const render = where => {
       const n = whoName(), tm = timeNow(), addr = p.myAddress ? (tr() ? `Adres: ${p.myAddress}\n` : `Address: ${p.myAddress}\n`) : "";
       alertMessage = (test ? (tr() ? "DENEME. " : "TEST. ") : "") + (tr()
-        ? `Beside acil uyarısı: ${n} nöbet geçiriyor olabilir. Saat ${tm}'deki kontrole cevap vermedi.\n${addr}Konum: ${where}\nLütfen hemen ara ya da yanına git.`
-        : `Beside emergency: ${n} may be having a seizure and did not answer the check-in at ${tm}.\n${addr}Location: ${where}\nPlease call or go to them now.`);
+        ? `Lambaura acil uyarısı: ${n} nöbet geçiriyor olabilir. Saat ${tm}'deki kontrole cevap vermedi.\n${addr}Konum: ${where}\nLütfen hemen ara ya da yanına git.`
+        : `Lambaura emergency: ${n} may be having a seizure and did not answer the check-in at ${tm}.\n${addr}Location: ${where}\nPlease call or go to them now.`);
       document.getElementById("alertText").textContent = alertMessage;
       document.getElementById("callScript").textContent = tr()
         ? `"Epilepsi hastası ${n} nöbet geçiriyor olabilir. Saat ${tm} civarında başladı ve cevap vermiyor.${p.myAddress ? " Adres: " + p.myAddress + "." : ""}"`
@@ -821,10 +826,10 @@
       show("alert");
       const note = document.getElementById("alertAuto");
       note.textContent = "";
-      notify(test ? T("Beside test") : (tr() ? "Beside: ACİL, cevap yok" : "Beside: EMERGENCY, no answer"),
+      notify(test ? T("Lambaura test") : (tr() ? "Lambaura: ACİL, cevap yok" : "Lambaura: EMERGENCY, no answer"),
              alertMessage, test ? 3 : 5, where.startsWith("http") ? where : undefined).then(r => {
         note.textContent = T(r === "sent" ? "Your people were alerted automatically." : "Opening your message app...");
-        // If ntfy already reached people, stay on this page: opening the message app would send Beside to the
+        // If ntfy already reached people, stay on this page: opening the message app would send Lambaura to the
         // background and stop the spoken instructions. Otherwise open the message app right away.
         if (r === "sent" && !test) return;
         const first = contactsOrDemo()[0];
@@ -1025,16 +1030,16 @@
                 nights: nights.length, hours: hours.toFixed(1), feel: count("feel"), trig: count("triggers"),
                 nDiary: diary.length, stress: avg(st), sleep: avg(sl) };
     const text = tr()
-      ? `Beside raporu, son ${v.days} gün (${v.today})\nNöbet türü (doktor): ${v.type}\n\n` +
+      ? `Lambaura raporu, son ${v.days} gün (${v.today})\nNöbet türü (doktor): ${v.type}\n\n` +
         `Olası nöbet alarmı: ${v.checks}\nCevap gelmediği için yakınlara haber verilen: ${v.alerts}\nBildirilen aura: ${v.auras}\n` +
         `İzlenen gece: ${v.nights} (${v.hours} saat)\n\nNöbetten sonra hissedilenler: ${v.feel}\nOlası tetikleyiciler: ${v.trig}\n` +
         `Paylaşılan günlük notu: ${v.nDiary}` + (v.stress ? `, ortalama stres ${v.stress}/10` : "") + (v.sleep ? `, ortalama uyku ${v.sleep} saat` : "") +
-        `\n\nSadece hareketle tespit edildi, EEG ile doğrulanmadı. Beside bir araştırma prototipidir, tıbbi cihaz değildir.`
-      : `Beside report, last ${v.days} days (${v.today})\nSeizure type (doctor): ${v.type}\n\n` +
+        `\n\nSadece hareketle tespit edildi, EEG ile doğrulanmadı. Lambaura bir araştırma prototipidir, tıbbi cihaz değildir.`
+      : `Lambaura report, last ${v.days} days (${v.today})\nSeizure type (doctor): ${v.type}\n\n` +
         `Possible seizure alarms: ${v.checks}\nPeople alerted because there was no answer: ${v.alerts}\nAuras reported: ${v.auras}\n` +
         `Nights watched: ${v.nights} (${v.hours} h)\n\nFelt afterwards: ${v.feel}\nPossible triggers: ${v.trig}\n` +
         `Shared diary notes: ${v.nDiary}` + (v.stress ? `, average stress ${v.stress}/10` : "") + (v.sleep ? `, average sleep ${v.sleep} h` : "") +
-        `\n\nDetected from movement only, not confirmed by EEG. Beside is a research prototype, not a medical device.`;
+        `\n\nDetected from movement only, not confirmed by EEG. Lambaura is a research prototype, not a medical device.`;
     return { stats: [[v.checks, T("possible seizure alarms")], [v.alerts, T("times people were alerted")],
                      [v.auras, T("auras reported")], [v.hours, T("hours watched at night")]], text };
   }
@@ -1078,10 +1083,10 @@
     const text = reportSummary(reportEvents()).text, f = csvFile();
     store("lastReport", new Date().toISOString());
     if (navigator.canShare && navigator.canShare({ files: [f] })) {
-      try { await navigator.share({ title: "Beside", text, files: [f] }); } catch (e) {}
+      try { await navigator.share({ title: "Lambaura", text, files: [f] }); } catch (e) {}
       return;
     }
-    location.href = "mailto:" + encodeURIComponent(profile().docEmail || "") + "?subject=" + encodeURIComponent(tr() ? "Beside nöbet raporu" : "Beside seizure report") +
+    location.href = "mailto:" + encodeURIComponent(profile().docEmail || "") + "?subject=" + encodeURIComponent(tr() ? "Lambaura nöbet raporu" : "Lambaura seizure report") +
                     "&body=" + encodeURIComponent(text);
   }
 
@@ -1177,6 +1182,11 @@
       st.style.color = "";
     }
   }
+
+  // ---------- small logo next to the brand name on every screen ----------
+  const MARK = document.querySelector("#splash .mark").outerHTML.replace('class="mark"', 'class="mini"')
+    .replace('width="92" height="88"', 'width="26" height="25"');
+  document.querySelectorAll(".brand").forEach(b => b.insertAdjacentHTML("afterbegin", MARK));
 
   // ---------- start ----------
   i18n.setLang(profile().lang || i18n.detectLang());

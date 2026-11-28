@@ -1,4 +1,4 @@
-/* Beside translations. Keys are the English text. To add a language, add another table to TABLES.
+/* Lambaura translations. Keys are the English text. To add a language, add another table to TABLES.
    Stored data (log, diary) is kept in English and translated only for display. */
 (function (root) {
   "use strict";
@@ -9,8 +9,8 @@
 
     // consent
     "Before we start": "Başlamadan önce",
-    "At night, Beside watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.":
-      "Beside gece boyunca nöbetin güçlü hareketlerini izler ve seçtiğin kişilerin seni kontrol etmesini sağlar. Bunun için birkaç izne ihtiyacı var. İstersen bunları sonra telefonunun ayarlarından kapatabilirsin.",
+    "At night, Lambaura watches for the strong movements of a seizure and gets the people you choose to check on you. For that it needs a few permissions. You can turn them off later in your phone settings.":
+      "Lambaura gece boyunca nöbetin güçlü hareketlerini izler ve seçtiğin kişilerin seni kontrol etmesini sağlar. Bunun için birkaç izne ihtiyacı var. İstersen bunları sonra telefonunun ayarlarından kapatabilirsin.",
     "Motion": "Hareket",
     "To notice the rhythmic jerking of a convulsive seizure while you sleep.": "Uyurken kasılmalı bir nöbetin ritmik sarsıntılarını fark etmek için.",
     "Location": "Konum",
@@ -19,7 +19,7 @@
     "Only when you turn on listening for your code word. Nothing is recorded.": "Sadece kod kelimeni dinlemeyi açtığında. Hiçbir şey kaydedilmez.",
     "Your log": "Kayıtların",
     "Kept on this phone. It only leaves when you share a report.": "Bu telefonda kalır. Sadece sen bir rapor paylaşırsan dışarı çıkar.",
-    "Beside is a research prototype, not a medical device.": "Beside bir araştırma prototipidir, tıbbi cihaz değildir.",
+    "Lambaura is a research prototype, not a medical device.": "Lambaura bir araştırma prototipidir, tıbbi cihaz değildir.",
     "It can miss seizures and it can raise false alarms. Keep following your doctor's advice.": "Nöbetleri kaçırabilir ve yanlış alarm verebilir. Doktorunun önerilerine uymaya devam et.",
     "I understand, continue": "Anladım, devam et",
 
@@ -40,7 +40,7 @@
     "Focal without movement": "Hareketsiz fokal",
     "Usual seizure length (seconds)": "Nöbetlerin genelde kaç saniye sürüyor",
     "Sound can trigger my seizures": "Nöbetlerim sesle tetiklenebiliyor",
-    "If ticked, Beside will not speak out loud during an alert.": "İşaretliyse Beside acil durumda sesli konuşmaz.",
+    "If ticked, Lambaura will not speak out loud during an alert.": "İşaretliyse Lambaura acil durumda sesli konuşmaz.",
     "Doctor's name": "Doktorunun adı",
     "Doctor's email for reports": "Raporlar için doktorunun e-postası",
     "Your doctor only gets the reports you share. Emergency alerts go to your people, because a doctor may not see a message at night.":
@@ -65,8 +65,8 @@
     "Sending...": "Gönderiliyor...",
     "Sent. Check their phone.": "Gönderildi. Onların telefonuna bak.",
     "Could not send. Check the internet connection.": "Gönderilemedi. İnternet bağlantısını kontrol et.",
-    "Beside test": "Beside deneme",
-    "This is a test from Beside. If you can read it, alerts work.": "Bu Beside'dan bir deneme. Bunu okuyabiliyorsan uyarılar çalışıyor.",
+    "Lambaura test": "Lambaura deneme",
+    "This is a test from Lambaura. If you can read it, alerts work.": "Bu Lambaura'dan bir deneme. Bunu okuyabiliyorsan uyarılar çalışıyor.",
     "Timing": "Süreler",
     "\"Are you OK?\" time after a possible seizure": "Olası nöbetten sonra \"İyi misin?\" süresi",
     "\"Are you OK?\" time after an aura": "Auradan sonra \"İyi misin?\" süresi",
@@ -103,7 +103,7 @@
       "Ayarlar → Güvenlik ve acil durum → Acil SOS. Yan tuşa art arda basınca konumun kişilerine gönderilir.",
     "Display": "Ekran",
     "Calm display": "Sakin ekran",
-    "Dims the app and turns off all animation. Beside never flashes.": "Uygulamayı kısar ve tüm animasyonları kapatır. Beside asla yanıp sönmez.",
+    "Dims the app and turns off all animation. Lambaura never flashes.": "Uygulamayı kısar ve tüm animasyonları kapatır. Lambaura asla yanıp sönmez.",
     "Save": "Kaydet",
     "Research prototype. Not a medical device.": "Araştırma prototipi. Tıbbi cihaz değildir.",
 
@@ -150,7 +150,7 @@
     "If you don't answer, your people will be alerted.": "Cevap vermezsen yakınlarına haber verilecek.",
     "Your people know about the aura. Tap below if you are fine.": "Yakınların aurayı biliyor. İyiysen aşağıya dokun.",
     "I'm OK": "İyiyim",
-    "Beside: all OK": "Beside: her şey yolunda",
+    "Lambaura: all OK": "Lambaura: her şey yolunda",
     "Getting help": "Yardım isteniyor",
     "Practice: this is what would happen": "Deneme: gerçekte bu olurdu",
     "Message to your people": "Yakınlarına giden mesaj",
@@ -254,8 +254,8 @@
 
     // replay
     "A real seizure, replayed": "Gerçek bir nöbet, yeniden oynatılıyor",
-    "This is a real night recorded in a hospital. Press play to watch Beside's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Beside would raise the alarm.":
-      "Bu, hastanede kaydedilmiş gerçek bir gece. Oynat'a basınca Beside'ın dedektörünün, yani telefonunda çalışan kodun aynısının, bu geceyi nasıl izlediğini göreceksin. Nöbetin başladığı anı ve Beside'ın alarm vereceği anı göreceksin.",
+    "This is a real night recorded in a hospital. Press play to watch Lambaura's detector go through it, the same code that runs on your phone. You will see the seizure start and the moment Lambaura would raise the alarm.":
+      "Bu, hastanede kaydedilmiş gerçek bir gece. Oynat'a basınca Lambaura'nın dedektörünün, yani telefonunda çalışan kodun aynısının, bu geceyi nasıl izlediğini göreceksin. Nöbetin başladığı anı ve Lambaura'nın alarm vereceği anı göreceksin.",
     "Movement (sensor on the chest)": "Hareket (göğüsteki sensör)",
     "Seizure score (dashed line: alarm level)": "Nöbet skoru (kesikli çizgi: alarm seviyesi)",
     "Press play. The night plays 20 times faster than real time.": "Oynat'a bas. Gece, gerçek zamandan 20 kat hızlı oynar.",
